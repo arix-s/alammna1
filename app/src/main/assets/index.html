@@ -1,0 +1,4685 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B0F17" />
+  <title>Alammna Panel — لوحة تحكم مستودعات GitHub</title>
+  <style>
+    :root {
+      --bg-base: #090d14;
+      --bg-surface: #0f1623;
+      --bg-elevated: #162032;
+      --bg-hover: #1d2a40;
+      --bg-input: #0b111c;
+      --border: rgba(148, 163, 184, 0.14);
+      --border-strong: rgba(148, 163, 184, 0.28);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #38bdf8;
+      --accent-strong: #0ea5e9;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --success: #22c55e;
+      --success-soft: rgba(34, 197, 94, 0.14);
+      --warning: #f59e0b;
+      --warning-soft: rgba(245, 158, 11, 0.14);
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.14);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.45);
+      --font-sans: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    body {
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(14, 165, 233, 0.06), transparent 45%);
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .ltr {
+      direction: ltr;
+      text-align: left;
+      unicode-bidi: isolate;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 99px;
+    }
+
+    /* App Shell */
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Connect View */
+    .connect-screen {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+    }
+
+    .connect-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-lg);
+      animation: fadeSlideUp 0.3s ease;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(14, 165, 233, 0.08));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-subtitle {
+      margin: 2px 0 0;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .info-banner {
+      background: rgba(56, 189, 248, 0.07);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+    }
+
+    .info-banner strong {
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .info-banner ul {
+      margin: 6px 0 0;
+      padding-right: 18px;
+      padding-left: 0;
+    }
+
+    .info-banner li {
+      margin-bottom: 4px;
+    }
+
+    .field-group {
+      margin-bottom: 16px;
+    }
+
+    .field-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 7px;
+    }
+
+    .field-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input, .select, .textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      padding: 11px 14px;
+      min-height: 46px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .input:focus, .select:focus, .textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
+    }
+
+    .input-with-btn {
+      padding-left: 46px;
+    }
+
+    .input-icon-btn {
+      position: absolute;
+      left: 6px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .input-icon-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .textarea {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.5;
+      font-size: 0.88rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: transform 0.12s, background 0.18s, border-color 0.18s, opacity 0.18s;
+      white-space: nowrap;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-sm {
+      min-height: 36px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #04101a;
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-hover);
+      border-color: rgba(148, 163, 184, 0.4);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .btn-danger {
+      background: var(--danger-soft);
+      border: 1px solid rgba(239, 68, 68, 0.32);
+      color: #fca5a5;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.24);
+    }
+
+    .btn-success {
+      background: var(--success-soft);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #86efac;
+    }
+
+    /* Top Bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(9, 13, 20, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+    }
+
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .topbar-brand-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .repo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 0.84rem;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .branch-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 0 10px;
+      min-height: 36px;
+    }
+
+    .branch-select {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      outline: none;
+      max-width: 150px;
+      padding: 6px 0;
+    }
+
+    .branch-select option {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+
+    .status-chip.online {
+      background: var(--success-soft);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.25);
+    }
+
+    .status-chip.readonly {
+      background: var(--warning-soft);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.28);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Main Container */
+    .main-container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 16px 88px;
+      flex: 1;
+    }
+
+    /* Nav Tabs */
+    .workspace-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .workspace-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      min-height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      transition: all 0.18s;
+    }
+
+    .nav-tab:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .nav-tab.active {
+      background: var(--accent-soft);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: var(--accent);
+    }
+
+    .nav-badge {
+      background: rgba(148, 163, 184, 0.18);
+      color: var(--text-primary);
+      padding: 1px 7px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .nav-tab.active .nav-badge {
+      background: rgba(56, 189, 248, 0.25);
+      color: var(--accent);
+    }
+
+    /* Cards & Grids */
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-subtitle {
+      margin: 3px 0 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .toolbar-search {
+      flex: 1 1 240px;
+      position: relative;
+    }
+
+    .toolbar-search .input {
+      padding-right: 40px;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      padding: 7px 13px;
+      min-height: 36px;
+      border-radius: 99px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .chip.active {
+      background: var(--accent-soft);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: var(--accent);
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      transition: border-color 0.18s, transform 0.18s, background 0.18s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-interactive {
+      cursor: pointer;
+    }
+
+    .card-interactive:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      background: var(--bg-elevated);
+      transform: translateY(-2px);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .card-desc {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .badge-accent {
+      background: var(--accent-soft);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+    }
+
+    .badge-success {
+      background: var(--success-soft);
+      border-color: rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+
+    .badge-warning {
+      background: var(--warning-soft);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+    }
+
+    .badge-danger {
+      background: var(--danger-soft);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    /* Switch */
+    .switch-btn {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      border-radius: 99px;
+      background: #334155;
+      border: 1px solid var(--border-strong);
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .switch-btn::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      transition: transform 0.2s;
+    }
+
+    .switch-btn.on {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .switch-btn.on::after {
+      transform: translateX(20px);
+      background: #052e16;
+    }
+
+    /* File Browser */
+    .panel-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+
+    .breadcrumb-item {
+      color: var(--accent);
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .breadcrumb-item:hover {
+      background: var(--accent-soft);
+    }
+
+    .breadcrumb-current {
+      color: var(--text-primary);
+      font-weight: 600;
+      padding: 4px 6px;
+    }
+
+    .file-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .file-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .file-row:last-child {
+      border-bottom: none;
+    }
+
+    .file-row:hover {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .file-row-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .file-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+    }
+
+    .file-icon.dir {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+    }
+
+    .file-icon.json {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--warning);
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 0.92rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .file-meta {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .file-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Code / JSON Editor */
+    .editor-shell {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .editor-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .editor-body {
+      padding: 16px;
+    }
+
+    .code-textarea {
+      width: 100%;
+      min-height: 340px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      line-height: 1.6;
+      tab-size: 2;
+      resize: vertical;
+      outline: none;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .code-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .editor-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    /* Empty & Loading States */
+    .state-box {
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(56, 189, 248, 0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    .spinner-sm {
+      width: 16px;
+      height: 16px;
+      border-width: 2px;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(2, 6, 14, 0.78);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 0.18s ease;
+    }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: fadeSlideUp 0.2s ease;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-elevated);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .preview-block {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .preview-block-head {
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .preview-block pre {
+      margin: 0;
+      padding: 12px;
+      max-height: 220px;
+      overflow: auto;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      direction: ltr;
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Toasts */
+    .toast-stack {
+      position: fixed;
+      bottom: 84px;
+      left: 16px;
+      right: 16px;
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      max-width: 500px;
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.88rem;
+      animation: fadeSlideUp 0.2s ease;
+    }
+
+    .toast.success { border-color: rgba(34, 197, 94, 0.45); }
+    .toast.error { border-color: rgba(239, 68, 68, 0.5); }
+    .toast.warning { border-color: rgba(245, 158, 11, 0.5); }
+
+    /* Mobile Bottom Bar */
+    .mobile-bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .workspace-nav {
+        display: none;
+      }
+      .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: rgba(11, 15, 23, 0.94);
+        backdrop-filter: blur(14px);
+        border-top: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+        gap: 4px;
+      }
+      .mobile-nav-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        min-height: 50px;
+        border-radius: 10px;
+        color: var(--text-secondary);
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+      .mobile-nav-btn.active {
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+      .grid-cards {
+        grid-template-columns: 1fr;
+      }
+      .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    /* Key-value dynamic form rows */
+    .kv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      min-height: 46px;
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="app">
+    <!-- Topbar (shown when connected) -->
+    <header class="topbar hidden" id="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-left">
+          <div class="topbar-brand">
+            <span class="topbar-brand-dot" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </span>
+            <span>Alammna Panel</span>
+          </div>
+
+          <button type="button" class="repo-pill hidden" id="topbarRepoPill" title="تغيير المستودع">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span class="ltr mono" id="topbarRepoName"></span>
+          </button>
+
+          <span class="status-chip online" id="connectionStatusChip">
+            <span class="status-dot"></span>
+            <span id="connectionUserLabel">متصل</span>
+          </span>
+
+          <span class="status-chip readonly hidden" id="readOnlyChip">قراءة فقط</span>
+        </div>
+
+        <div class="topbar-right">
+          <div class="branch-select-wrap hidden" id="branchSelectWrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent)"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+            <select class="branch-select" id="branchSelect" aria-label="اختر الفرع"></select>
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-sm hidden" id="reloadRepoBtn" title="إعادة تحميل بيانات المستودع">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <span>تحديث</span>
+          </button>
+
+          <button type="button" class="btn btn-secondary btn-sm hidden" id="switchRepoBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>المستودعات</span>
+          </button>
+
+          <button type="button" class="btn btn-danger btn-sm" id="disconnectBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>قطع الاتصال</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 1. Connect Screen -->
+    <main class="connect-screen" id="connectScreen">
+      <section class="connect-card">
+        <div class="brand-header">
+          <div class="brand-logo" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <h1 class="brand-title">Alammna Panel</h1>
+            <p class="brand-subtitle">لوحة تحكم شاملة لإدارة مستودعات GitHub وقوائم عالمنا وDNS</p>
+          </div>
+        </div>
+
+        <div class="info-banner">
+          <strong>الأمان والصلاحيات المطلوبة (Fine-grained PAT)</strong>
+          يُحفظ رمز الدخول في الذاكرة المؤقتة للجلسة فقط (RAM) ولا يتم تخزينه في المتصفح أو إرساله لأي جهة خارج GitHub API.
+          <ul>
+            <li>حدد المستودعات المطلوبة فقط (Only select repositories).</li>
+            <li>صلاحية <b>Contents</b>: قراءة وكتابة (<span class="ltr mono">Read and write</span>).</li>
+            <li>صلاحية <b>Metadata</b>: قراءة (<span class="ltr mono">Read-only</span>).</li>
+          </ul>
+        </div>
+
+        <form id="connectForm" autocomplete="off">
+          <div class="field-group">
+            <label class="field-label" for="tokenInput">
+              <span>GitHub Personal Access Token</span>
+              <span class="field-hint">جلسة مؤقتة بالذاكرة فقط</span>
+            </label>
+            <div class="input-wrap">
+              <input
+                type="password"
+                id="tokenInput"
+                class="input input-with-btn ltr mono"
+                placeholder="github_pat_... أو ghp_..."
+                autocomplete="off"
+                spellcheck="false"
+                required
+              />
+              <button type="button" class="input-icon-btn" id="toggleTokenVisBtn" aria-label="إظهار أو إخفاء الرمز">
+                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="connectSubmitBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>اتصال وجلب المستودعات</span>
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <!-- 2. Repositories Screen -->
+    <main class="main-container hidden" id="reposScreen">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span>المستودعات المتاحة</span>
+            <span class="badge badge-accent" id="reposCountBadge">0</span>
+          </h2>
+          <p class="section-subtitle" id="reposLoadSubtitle">اختر مستودعا لإدارة قوائم عالمنا وإعدادات DNS والملفات مباشرة.</p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="refreshReposBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          <span>إعادة جلب المستودعات</span>
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-search">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="repoSearchInput" class="input" placeholder="ابحث باسم المستودع أو المالك أو الوصف..." />
+        </div>
+        <div class="filter-chips" id="repoFilterChips">
+          <button type="button" class="chip active" data-filter="all">الكل</button>
+          <button type="button" class="chip" data-filter="push">صلاحية كتابة</button>
+          <button type="button" class="chip" data-filter="private">خاص</button>
+          <button type="button" class="chip" data-filter="public">عام</button>
+          <button type="button" class="chip" data-filter="org">مؤسسات</button>
+        </div>
+      </div>
+
+      <div id="reposContainer"></div>
+    </main>
+
+    <!-- 3. Workspace Screen (Playlists / DNS / Files) -->
+    <main class="main-container hidden" id="workspaceScreen">
+      <nav class="workspace-nav" aria-label="أقسام الإدارة">
+        <button type="button" class="nav-tab active" data-tab="playlists">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span>قوائم عالمنا</span>
+          <span class="nav-badge" id="tabBadgePlaylists">0</span>
+        </button>
+        <button type="button" class="nav-tab" data-tab="dns">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>إدارة DNS</span>
+          <span class="nav-badge" id="tabBadgeDns">0</span>
+        </button>
+        <button type="button" class="nav-tab" data-tab="files">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          <span>مدير الملفات</span>
+          <span class="nav-badge" id="tabBadgeFiles">0</span>
+        </button>
+        <button type="button" class="nav-tab" data-tab="repos">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>المستودعات</span>
+        </button>
+      </nav>
+
+      <!-- Tab Content Containers -->
+      <section id="tabPlaylists"></section>
+      <section id="tabDns" class="hidden"></section>
+      <section id="tabFiles" class="hidden"></section>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav hidden" id="mobileBottomNav" aria-label="التنقل السريع">
+      <button type="button" class="mobile-nav-btn active" data-tab="playlists">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span>القوائم</span>
+      </button>
+      <button type="button" class="mobile-nav-btn" data-tab="dns">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span>DNS</span>
+      </button>
+      <button type="button" class="mobile-nav-btn" data-tab="files">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        <span>الملفات</span>
+      </button>
+      <button type="button" class="mobile-nav-btn" data-tab="repos">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>المستودعات</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Modal Root -->
+  <div id="modalRoot"></div>
+  <!-- Toast Stack -->
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    // =========================================================================
+    // 1. IN-MEMORY SECURE STATE (Never persisted to Storage/Cookies/URL)
+    // =========================================================================
+    let _token = "";
+
+    const state = {
+      user: null,
+      rateLimit: null,
+      repos: [],
+      reposLoading: false,
+      repoSearch: "",
+      repoFilter: "all",
+
+      selectedRepo: null,
+      branches: [],
+      currentBranch: "",
+      tree: [],           // Full git tree items [{path, type, sha, size}]
+      treeTruncated: false,
+      workspaceLoading: false,
+      activeTab: "playlists",
+
+      // Playlists state
+      playlistIndexCandidates: [],
+      playlistIndexPath: null,
+      playlistIndexSha: null,
+      playlistRawObj: null,
+      playlistContainerMode: "array", // 'array' | 'wrapped'
+      playlistWrapperKey: null,
+      playlistItems: [],
+      playlistKeyMap: { id: "id", name: "name", file: "file", enabled: "enabled" },
+      activePlaylistFile: null, // { itemIndex, path, sha, rawText, parsed, sourceKey }
+
+      // DNS state
+      dnsCandidates: [],
+      selectedDnsPath: null,
+      dnsSha: null,
+      dnsRawText: "",
+      dnsParsed: null,
+      dnsMode: "none", // 'root_array' | 'wrapped_array' | 'object_map' | 'single_object' | 'none'
+      dnsArrayKey: null,
+      dnsEditMode: "visual", // 'visual' | 'raw'
+
+      // File manager state
+      currentDir: "",
+      fileSearch: "",
+      globalSearch: false,
+      openFile: null // { path, sha, content, isBinary, size, isJson }
+    };
+
+    function wipeSecretsAndReset() {
+      _token = "";
+      state.user = null;
+      state.rateLimit = null;
+      state.repos = [];
+      state.selectedRepo = null;
+      state.branches = [];
+      state.currentBranch = "";
+      state.tree = [];
+      state.playlistIndexCandidates = [];
+      state.playlistIndexPath = null;
+      state.playlistIndexSha = null;
+      state.playlistRawObj = null;
+      state.playlistItems = [];
+      state.activePlaylistFile = null;
+      state.dnsCandidates = [];
+      state.selectedDnsPath = null;
+      state.dnsSha = null;
+      state.dnsRawText = "";
+      state.dnsParsed = null;
+      state.currentDir = "";
+      state.openFile = null;
+      const ti = document.getElementById("tokenInput");
+      if (ti) ti.value = "";
+    }
+
+    window.addEventListener("beforeunload", wipeSecretsAndReset);
+    window.addEventListener("pagehide", wipeSecretsAndReset);
+
+    // =========================================================================
+    // 2. HELPERS: UTF-8 Base64, Escaping, Redaction, Formatting
+    // =========================================================================
+    function redactToken(text) {
+      if (!text) return "";
+      let out = String(text);
+      if (_token) {
+        out = out.split(_token).join("[REDACTED]");
+      }
+      return out.replace(/(github_pat_[A-Za-z0-9_]+|gh[pousr]_[A-Za-z0-9_]+)/g, "[REDACTED]");
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function decodeBase64Utf8(b64) {
+      const clean = (b64 || "").replace(/\s+/g, "");
+      const binary = atob(clean);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+    }
+
+    function encodeBase64Utf8(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = "";
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const slice = bytes.subarray(i, i + chunkSize);
+        binary += String.fromCharCode.apply(null, slice);
+      }
+      return btoa(binary);
+    }
+
+    function isLikelyBinary(b64) {
+      const clean = (b64 || "").replace(/\s+/g, "");
+      const sample = clean.slice(0, 1200);
+      try {
+        const bin = atob(sample);
+        let suspicious = 0;
+        for (let i = 0; i < bin.length; i++) {
+          const code = bin.charCodeAt(i);
+          if (code === 0) return true;
+          if (code < 9 || (code > 13 && code < 32)) suspicious++;
+        }
+        return bin.length > 0 && suspicious / bin.length > 0.15;
+      } catch {
+        return false;
+      }
+    }
+
+    function encodeGitHubPath(path) {
+      return String(path || "")
+        .split("/")
+        .filter((s) => s.length > 0)
+        .map((s) => encodeURIComponent(s))
+        .join("/");
+    }
+
+    function joinPath(dir, name) {
+      const d = (dir || "").replace(/^\/+|\/+$/g, "");
+      const n = (name || "").replace(/^\/+|\/+$/g, "");
+      if (!d) return n;
+      if (!n) return d;
+      return `${d}/${n}`;
+    }
+
+    function dirName(path) {
+      const idx = String(path || "").lastIndexOf("/");
+      return idx > -1 ? path.slice(0, idx) : "";
+    }
+
+    function baseName(path) {
+      const idx = String(path || "").lastIndexOf("/");
+      return idx > -1 ? path.slice(idx + 1) : path;
+    }
+
+    function formatBytes(bytes) {
+      if (bytes == null || isNaN(bytes)) return "";
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
+
+    function formatDateAr(iso) {
+      if (!iso) return "غير معروف";
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString("ar-EG", {
+          year: "numeric",
+          month: "short",
+          day: "numeric"
+        });
+      } catch {
+        return iso;
+      }
+    }
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function validateJsonText(text) {
+      try {
+        const parsed = JSON.parse(text);
+        return { valid: true, parsed, error: null };
+      } catch (err) {
+        return { valid: false, parsed: null, error: err.message || "صيغة JSON غير صالحة" };
+      }
+    }
+
+    function canPushRepo() {
+      const r = state.selectedRepo;
+      if (!r || !r.permissions) return true;
+      return Boolean(r.permissions.push || r.permissions.admin || r.permissions.maintain);
+    }
+
+    // =========================================================================
+    // 3. TOAST NOTIFICATIONS
+    // =========================================================================
+    function showToast(message, type = "info", duration = 4200) {
+      const stack = document.getElementById("toastStack");
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      const iconSvg =
+        type === "success"
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.2" style="flex-shrink:0;margin-top:2px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`
+          : type === "error"
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`
+          : type === "warning"
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2" style="flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+
+      el.innerHTML = `
+        ${iconSvg}
+        <div style="flex:1;line-height:1.45">${escapeHtml(redactToken(message))}</div>
+        <button type="button" aria-label="إغلاق" style="color:var(--text-muted);padding:2px">✕</button>
+      `;
+      el.querySelector("button").onclick = () => el.remove();
+      stack.appendChild(el);
+      if (duration > 0) {
+        setTimeout(() => {
+          if (el.isConnected) el.remove();
+        }, duration);
+      }
+    }
+
+    // =========================================================================
+    // 4. GITHUB REST API CLIENT
+    // =========================================================================
+    class GitHubApiError extends Error {
+      constructor(message, status, data) {
+        super(redactToken(message));
+        this.status = status;
+        this.data = data;
+      }
+    }
+
+    function parseNextLink(linkHeader) {
+      if (!linkHeader) return null;
+      const parts = linkHeader.split(",");
+      for (const part of parts) {
+        const m = part.match(/<([^>]+)>;\s*rel="next"/);
+        if (m) return m[1];
+      }
+      return null;
+    }
+
+    async function ghFetch(endpointOrUrl, options = {}) {
+      if (!_token) {
+        throw new GitHubApiError("لا يوجد رمز وصول نشط في الجلسة. يرجى الاتصال مجددا.", 401, null);
+      }
+      const url = endpointOrUrl.startsWith("https://")
+        ? endpointOrUrl
+        : `https://api.github.com${endpointOrUrl}`;
+
+      const headers = {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${_token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+        ...(options.headers || {})
+      };
+      if (options.body && !headers["Content-Type"]) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      let res;
+      try {
+        res = await fetch(url, {
+          method: options.method || "GET",
+          headers,
+          body: options.body,
+          cache: "no-store"
+        });
+      } catch (networkErr) {
+        throw new GitHubApiError(
+          "تعذر الاتصال بخادم GitHub. تحقق من اتصال الإنترنت أو إعدادات الشبكة.",
+          0,
+          null
+        );
+      }
+
+      const remaining = res.headers.get("x-ratelimit-remaining");
+      const reset = res.headers.get("x-ratelimit-reset");
+      if (remaining !== null) {
+        state.rateLimit = { remaining: Number(remaining), reset: Number(reset || 0) };
+      }
+
+      let data = null;
+      const contentType = res.headers.get("content-type") || "";
+      if (res.status !== 204 && contentType.includes("application/json")) {
+        try {
+          data = await res.json();
+        } catch {
+          data = null;
+        }
+      }
+
+      if (!res.ok) {
+        const ghMsg = data && data.message ? data.message : `HTTP ${res.status}`;
+        if (res.status === 401) {
+          throw new GitHubApiError(
+            "رمز الوصول غير صالح أو منتهي الصلاحية (401). يرجى إعادة الاتصال برمز صحيح.",
+            401,
+            data
+          );
+        }
+        if (res.status === 403) {
+          if (remaining === "0") {
+            const resetTime = reset ? new Date(Number(reset) * 1000).toLocaleTimeString("ar-EG") : "";
+            throw new GitHubApiError(
+              `تم تجاوز حد طلبات GitHub API مؤقتا. يرجى الانتظار حتى ${resetTime || "تجدد الحد"}.`,
+              403,
+              data
+            );
+          }
+          throw new GitHubApiError(
+            `صلاحيات غير كافية لتنفيذ العملية (403): ${ghMsg}. تأكد من منح صلاحية Contents (Read & Write).`,
+            403,
+            data
+          );
+        }
+        if (res.status === 404) {
+          throw new GitHubApiError(`العنصر المطلوب غير موجود على GitHub (404): ${ghMsg}`, 404, data);
+        }
+        if (res.status === 409) {
+          throw new GitHubApiError(
+            "تعارض في نسخة الملف (409 Conflict): تم تعديل الملف على GitHub بعد آخر تحميل.",
+            409,
+            data
+          );
+        }
+        if (res.status === 422 && /sha/i.test(ghMsg)) {
+          throw new GitHubApiError(
+            `تعارض في SHA المطلوب (422): ${ghMsg}`,
+            409,
+            data
+          );
+        }
+        throw new GitHubApiError(`خطأ من GitHub (${res.status}): ${ghMsg}`, res.status, data);
+      }
+
+      return { data, headers: res.headers };
+    }
+
+    async function fetchAllPaginated(initialEndpoint, onProgress) {
+      const results = [];
+      let nextUrl = initialEndpoint;
+      let page = 1;
+      while (nextUrl) {
+        const { data, headers } = await ghFetch(nextUrl);
+        if (Array.isArray(data)) {
+          results.push(...data);
+        }
+        if (onProgress) onProgress(page, results.length);
+        nextUrl = parseNextLink(headers.get("Link"));
+        page++;
+        if (page > 100) break; // safety cap
+      }
+      return results;
+    }
+
+    async function getFileFromGitHub(owner, repo, path, branch) {
+      const encoded = encodeGitHubPath(path);
+      const { data } = await ghFetch(
+        `/repos/${owner}/${repo}/contents/${encoded}?ref=${encodeURIComponent(branch)}`
+      );
+      if (Array.isArray(data)) {
+        throw new GitHubApiError("المسار المحدد هو مجلد وليس ملفا.", 400, data);
+      }
+
+      let b64 = data.content || "";
+      if (!b64 && data.sha) {
+        // Large file > 1MB fallback via Git Blobs API
+        const blobRes = await ghFetch(`/repos/${owner}/${repo}/git/blobs/${data.sha}`);
+        b64 = blobRes.data.content || "";
+      }
+
+      const binary = isLikelyBinary(b64);
+      const text = binary ? "" : decodeBase64Utf8(b64);
+      return {
+        path: data.path,
+        sha: data.sha,
+        size: data.size,
+        isBinary: binary,
+        text
+      };
+    }
+
+    async function putFileToGitHub({ owner, repo, path, branch, text, message, sha }) {
+      const encoded = encodeGitHubPath(path);
+      const payload = {
+        message: message.trim(),
+        content: encodeBase64Utf8(text),
+        branch
+      };
+      if (sha) payload.sha = sha;
+      const { data } = await ghFetch(`/repos/${owner}/${repo}/contents/${encoded}`, {
+        method: "PUT",
+        body: JSON.stringify(payload)
+      });
+      return data;
+    }
+
+    async function deleteFileFromGitHub({ owner, repo, path, branch, message, sha }) {
+      const encoded = encodeGitHubPath(path);
+      const { data } = await ghFetch(`/repos/${owner}/${repo}/contents/${encoded}`, {
+        method: "DELETE",
+        body: JSON.stringify({
+          message: message.trim(),
+          sha,
+          branch
+        })
+      });
+      return data;
+    }
+
+    // =========================================================================
+    // 5. MODAL & COMMIT PREVIEW / CONFLICT RESOLUTION ENGINE
+    // =========================================================================
+    const modalRoot = document.getElementById("modalRoot");
+
+    function closeModal() {
+      modalRoot.innerHTML = "";
+    }
+
+    function openModal({ title, bodyHtml, footerButtons = [], onMount }) {
+      closeModal();
+      const backdrop = document.createElement("div");
+      backdrop.className = "modal-backdrop";
+      backdrop.innerHTML = `
+        <div class="modal-dialog" role="dialog" aria-modal="true">
+          <div class="modal-header">
+            <h3 class="modal-title">${escapeHtml(title)}</h3>
+            <button type="button" class="btn btn-ghost btn-sm" id="modalCloseX" aria-label="إغلاق">✕</button>
+          </div>
+          <div class="modal-body" id="modalBodySlot">${bodyHtml}</div>
+          <div class="modal-footer" id="modalFooterSlot"></div>
+        </div>
+      `;
+      modalRoot.appendChild(backdrop);
+
+      backdrop.querySelector("#modalCloseX").onclick = closeModal;
+      backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) closeModal();
+      });
+
+      const footerSlot = backdrop.querySelector("#modalFooterSlot");
+      footerButtons.forEach((btnCfg) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = `btn ${btnCfg.className || "btn-secondary"}`;
+        b.textContent = btnCfg.label;
+        if (btnCfg.id) b.id = btnCfg.id;
+        b.onclick = () => btnCfg.onClick && btnCfg.onClick(backdrop, b);
+        footerSlot.appendChild(b);
+      });
+
+      if (onMount) onMount(backdrop);
+      return backdrop;
+    }
+
+    /**
+     * Executes one or more GitHub Contents API operations with:
+     * - Pre-commit preview & editable commit message
+     * - Step-by-step live execution state
+     * - 409 SHA Conflict resolution dialog (never silent overwrite!)
+     */
+    function requestGitHubCommit({ title, defaultMessage, operations, onSuccess }) {
+      if (!canPushRepo()) {
+        showToast("صلاحية هذا المستودع للقراءة فقط؛ لا يمكن إرسال تعديلات.", "error");
+        return;
+      }
+      const repo = state.selectedRepo;
+      const branch = state.currentBranch;
+
+      const previewsHtml = operations
+        .map((op) => {
+          const badge =
+            op.type === "create"
+              ? `<span class="badge badge-success">إنشاء ملف</span>`
+              : op.type === "update"
+              ? `<span class="badge badge-accent">تعديل ملف</span>`
+              : `<span class="badge badge-danger">حذف ملف</span>`;
+          const previewText =
+            op.type === "delete"
+              ? `سيتم حذف الملف نهائيا من الفرع ${branch} (SHA: ${(op.sha || "").slice(0, 7)})`
+              : op.text;
+          return `
+            <div class="preview-block">
+              <div class="preview-block-head">
+                <span class="ltr mono">${escapeHtml(op.path)}</span>
+                ${badge}
+              </div>
+              <pre>${escapeHtml(previewText.slice(0, 6000))}${previewText.length > 6000 ? "\n... (مقتطع للمعاينة)" : ""}</pre>
+            </div>
+          `;
+        })
+        .join("");
+
+      openModal({
+        title: title || "تأكيد الحفظ إلى GitHub",
+        bodyHtml: `
+          <div class="meta-row">
+            <span class="badge badge-accent ltr mono">${escapeHtml(repo.full_name)}</span>
+            <span class="badge ltr mono">${escapeHtml(branch)}</span>
+            <span class="badge">${operations.length} عملية</span>
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label" for="commitMessageInput">رسالة Commit</label>
+            <input type="text" id="commitMessageInput" class="input" value="${escapeHtml(defaultMessage)}" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="field-label" style="margin-bottom:0">معاينة التغييرات قبل الإرسال</div>
+            ${previewsHtml}
+          </div>
+          <div id="commitProgressArea" class="hidden" style="padding:12px;border-radius:10px;background:var(--bg-elevated);border:1px solid var(--border);display:flex;align-items:center;gap:10px">
+            <div class="spinner spinner-sm"></div>
+            <span id="commitProgressText">جاري التنفيذ...</span>
+          </div>
+        `,
+        footerButtons: [
+          {
+            label: "إلغاء",
+            className: "btn-secondary",
+            onClick: () => closeModal()
+          },
+          {
+            label: "تأكيد وإرسال إلى GitHub",
+            className: "btn-primary",
+            id: "confirmCommitBtn",
+            onClick: async (backdrop, confirmBtn) => {
+              const msgInput = backdrop.querySelector("#commitMessageInput");
+              const commitMessage = (msgInput.value || "").trim();
+              if (!commitMessage) {
+                showToast("يرجى إدخال رسالة Commit واضحة.", "warning");
+                msgInput.focus();
+                return;
+              }
+              const progressArea = backdrop.querySelector("#commitProgressArea");
+              const progressText = backdrop.querySelector("#commitProgressText");
+              progressArea.classList.remove("hidden");
+              confirmBtn.disabled = true;
+              msgInput.disabled = true;
+
+              const results = [];
+              try {
+                for (let i = 0; i < operations.length; i++) {
+                  const op = operations[i];
+                  progressText.textContent = `(${i + 1}/${operations.length}) جاري ${
+                    op.type === "delete" ? "حذف" : op.type === "create" ? "إنشاء" : "تحديث"
+                  } ${op.path}...`;
+
+                  const res = await executeSingleOpWithConflictHandling(
+                    repo.owner.login,
+                    repo.name,
+                    branch,
+                    op,
+                    commitMessage
+                  );
+                  if (res === "RELOAD_ABORT") {
+                    closeModal();
+                    await loadWorkspaceData();
+                    return;
+                  }
+                  results.push(res);
+                }
+
+                closeModal();
+                const lastCommitSha = results[results.length - 1]?.commit?.sha?.slice(0, 7) || "";
+                showToast(
+                  `تم حفظ التغييرات على GitHub بنجاح${lastCommitSha ? ` (Commit: ${lastCommitSha})` : ""}.`,
+                  "success",
+                  5000
+                );
+                await loadWorkspaceData();
+                if (onSuccess) await onSuccess(results);
+              } catch (err) {
+                progressArea.classList.add("hidden");
+                confirmBtn.disabled = false;
+                msgInput.disabled = false;
+                showToast(err.message || "حدث خطأ أثناء الحفظ إلى GitHub.", "error", 6500);
+                if (err.status === 401) handleUnauthorized();
+              }
+            }
+          }
+        ]
+      });
+    }
+
+    async function executeSingleOpWithConflictHandling(owner, repo, branch, op, commitMessage) {
+      try {
+        if (op.type === "delete") {
+          let targetSha = op.sha;
+          if (!targetSha) {
+            const latest = await getFileFromGitHub(owner, repo, op.path, branch);
+            targetSha = latest.sha;
+          }
+          return await deleteFileFromGitHub({
+            owner,
+            repo,
+            path: op.path,
+            branch,
+            message: commitMessage,
+            sha: targetSha
+          });
+        } else {
+          // create or update
+          return await putFileToGitHub({
+            owner,
+            repo,
+            path: op.path,
+            branch,
+            text: op.text,
+            message: commitMessage,
+            sha: op.type === "update" ? op.sha : undefined
+          });
+        }
+      } catch (err) {
+        if (err.status === 409) {
+          // Fetch latest remote version and let user decide! Never silent overwrite.
+          let remote = null;
+          try {
+            remote = await getFileFromGitHub(owner, repo, op.path, branch);
+          } catch {
+            remote = null;
+          }
+
+          const choice = await showConflictModal(op, remote);
+          if (choice === "force" && remote) {
+            if (op.type === "delete") {
+              return await deleteFileFromGitHub({
+                owner,
+                repo,
+                path: op.path,
+                branch,
+                message: commitMessage,
+                sha: remote.sha
+              });
+            } else {
+              return await putFileToGitHub({
+                owner,
+                repo,
+                path: op.path,
+                branch,
+                text: op.text,
+                message: commitMessage,
+                sha: remote.sha
+              });
+            }
+          }
+          return "RELOAD_ABORT";
+        }
+        throw err;
+      }
+    }
+
+    function showConflictModal(op, remote) {
+      return new Promise((resolve) => {
+        openModal({
+          title: "تعارض في إصدار الملف على GitHub (409 Conflict)",
+          bodyHtml: `
+            <div class="info-banner" style="border-color:rgba(245,158,11,0.4);background:var(--warning-soft);color:#fde68a">
+              <strong>تم تعديل الملف على GitHub بواسطة عملية أخرى!</strong>
+              الملف <span class="ltr mono">${escapeHtml(op.path)}</span> تغيرت بصمته (SHA) منذ آخر قراءة. لحماية التعديلات الأحدث، لن يتم الكتابة فوقه تلقائيا.
+            </div>
+            ${
+              remote
+                ? `
+              <div class="preview-block">
+                <div class="preview-block-head">
+                  <span>النسخة الأحدث على GitHub (SHA: ${escapeHtml(remote.sha.slice(0, 7))})</span>
+                </div>
+                <pre>${escapeHtml((remote.text || "[ملف ثنائي]").slice(0, 3500))}</pre>
+              </div>`
+                : `<p style="color:var(--text-secondary)">قد يكون الملف قد حُذف من الفرع الحالي.</p>`
+            }
+            ${
+              op.type !== "delete"
+                ? `
+              <div class="preview-block">
+                <div class="preview-block-head"><span>تعديلاتك المحلية</span></div>
+                <pre>${escapeHtml((op.text || "").slice(0, 3500))}</pre>
+              </div>`
+                : ""
+            }
+          `,
+          footerButtons: [
+            {
+              label: "إلغاء وإعادة تحميل النسخة الأحدث",
+              className: "btn-secondary",
+              onClick: () => {
+                closeModal();
+                resolve("reload");
+              }
+            },
+            ...(remote
+              ? [
+                  {
+                    label: "اعتماد تعديلاتي والكتابة فوق النسخة الأحدث",
+                    className: "btn-danger",
+                    onClick: () => {
+                      closeModal();
+                      resolve("force");
+                    }
+                  }
+                ]
+              : [])
+          ]
+        });
+      });
+    }
+
+    // =========================================================================
+    // 6. CONNECTION & REPOSITORIES
+    // =========================================================================
+    function handleUnauthorized() {
+      wipeSecretsAndReset();
+      renderScreen("connect");
+    }
+
+    function renderScreen(screen) {
+      const topbar = document.getElementById("topbar");
+      const connectScreen = document.getElementById("connectScreen");
+      const reposScreen = document.getElementById("reposScreen");
+      const workspaceScreen = document.getElementById("workspaceScreen");
+      const mobileBottomNav = document.getElementById("mobileBottomNav");
+
+      connectScreen.classList.add("hidden");
+      reposScreen.classList.add("hidden");
+      workspaceScreen.classList.add("hidden");
+      mobileBottomNav.classList.add("hidden");
+
+      if (screen === "connect") {
+        topbar.classList.add("hidden");
+        connectScreen.classList.remove("hidden");
+      } else if (screen === "repos") {
+        topbar.classList.remove("hidden");
+        reposScreen.classList.remove("hidden");
+        document.getElementById("topbarRepoPill").classList.add("hidden");
+        document.getElementById("branchSelectWrap").classList.add("hidden");
+        document.getElementById("reloadRepoBtn").classList.add("hidden");
+        document.getElementById("switchRepoBtn").classList.add("hidden");
+        document.getElementById("readOnlyChip").classList.add("hidden");
+      } else if (screen === "workspace") {
+        topbar.classList.remove("hidden");
+        workspaceScreen.classList.remove("hidden");
+        mobileBottomNav.classList.remove("hidden");
+        document.getElementById("topbarRepoPill").classList.remove("hidden");
+        document.getElementById("branchSelectWrap").classList.remove("hidden");
+        document.getElementById("reloadRepoBtn").classList.remove("hidden");
+        document.getElementById("switchRepoBtn").classList.remove("hidden");
+      }
+    }
+
+    async function connectWithToken(rawToken) {
+      const token = (rawToken || "").trim();
+      if (!token) {
+        showToast("يرجى إدخال GitHub Personal Access Token.", "warning");
+        return;
+      }
+
+      const btn = document.getElementById("connectSubmitBtn");
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner spinner-sm"></div><span>جاري التحقق من الرمز...</span>`;
+
+      _token = token;
+      try {
+        const { data: user } = await ghFetch("/user");
+        state.user = user;
+        document.getElementById("tokenInput").value = ""; // clear from DOM immediately
+        document.getElementById("connectionUserLabel").textContent = `@${user.login}`;
+        showToast(`تم الاتصال بنجاح بحساب ${user.login}`, "success");
+        renderScreen("repos");
+        await loadRepositories();
+      } catch (err) {
+        _token = "";
+        showToast(err.message || "فشل الاتصال بـ GitHub.", "error", 6000);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+
+    async function loadRepositories() {
+      state.reposLoading = true;
+      renderReposList();
+      const subtitle = document.getElementById("reposLoadSubtitle");
+      subtitle.textContent = "جاري جلب جميع المستودعات المتاحة (بما فيها الصفحات التالية)...";
+
+      try {
+        const repos = await fetchAllPaginated(
+          "/user/repos?per_page=100&sort=updated&affiliation=owner,collaborator,organization_member",
+          (page, count) => {
+            subtitle.textContent = `جاري التحميل... صفحة ${page} (${count} مستودع)`;
+          }
+        );
+        state.repos = repos;
+        subtitle.textContent = `تم جلب ${repos.length} مستودع. اختر مستودعا للبدء.`;
+        document.getElementById("reposCountBadge").textContent = String(repos.length);
+      } catch (err) {
+        subtitle.textContent = "تعذر جلب المستودعات.";
+        showToast(err.message, "error", 6000);
+        if (err.status === 401) handleUnauthorized();
+      } finally {
+        state.reposLoading = false;
+        renderReposList();
+      }
+    }
+
+    function getFilteredRepos() {
+      const q = state.repoSearch.trim().toLowerCase();
+      return state.repos.filter((r) => {
+        if (state.repoFilter === "push" && !(r.permissions && (r.permissions.push || r.permissions.admin))) {
+          return false;
+        }
+        if (state.repoFilter === "private" && !r.private) return false;
+        if (state.repoFilter === "public" && r.private) return false;
+        if (state.repoFilter === "org" && r.owner?.type !== "Organization") return false;
+        if (!q) return true;
+        return (
+          (r.name || "").toLowerCase().includes(q) ||
+          (r.full_name || "").toLowerCase().includes(q) ||
+          (r.description || "").toLowerCase().includes(q) ||
+          (r.owner?.login || "").toLowerCase().includes(q)
+        );
+      });
+    }
+
+    function renderReposList() {
+      const container = document.getElementById("reposContainer");
+      if (state.reposLoading) {
+        container.innerHTML = `
+          <div class="state-box">
+            <div class="spinner"></div>
+            <div>جاري جلب المستودعات من GitHub...</div>
+          </div>
+        `;
+        return;
+      }
+
+      const list = getFilteredRepos();
+      if (!list.length) {
+        container.innerHTML = `
+          <div class="state-box">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <div>${
+              state.repos.length
+                ? "لا توجد مستودعات مطابقة لبحثك أو الفلتر المحدد."
+                : "لا توجد مستودعات متاحة لهذا الرمز. تأكد من صلاحيات Token."
+            }</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `<div class="grid-cards">${list
+        .map((r) => {
+          const hasPush = r.permissions ? Boolean(r.permissions.push || r.permissions.admin) : true;
+          const isOrg = r.owner?.type === "Organization";
+          return `
+            <article class="card card-interactive" data-repo-id="${r.id}" tabindex="0" role="button">
+              <div class="card-top">
+                <div style="min-width:0">
+                  <h3 class="card-title ltr mono">${escapeHtml(r.full_name)}</h3>
+                </div>
+                <span class="badge ${r.private ? "badge-warning" : "badge-accent"}">
+                  ${r.private ? "خاص" : "عام"}
+                </span>
+              </div>
+              <p class="card-desc">${escapeHtml(r.description || "بدون وصف لهذا المستودع")}</p>
+              <div class="meta-row">
+                <span class="badge">${isOrg ? "مؤسسة: " : "المالك: "}<b class="ltr mono">${escapeHtml(r.owner?.login || "")}</b></span>
+                <span class="badge ltr mono">${escapeHtml(r.default_branch || "main")}</span>
+                <span class="badge ${hasPush ? "badge-success" : "badge-danger"}">
+                  ${hasPush ? "قراءة وكتابة" : "قراءة فقط"}
+                </span>
+              </div>
+              <div class="meta-row" style="justify-content:space-between;margin-top:auto">
+                <span>آخر تحديث: ${formatDateAr(r.updated_at)}</span>
+                <span style="color:var(--accent);font-weight:700">فتح اللوحة ←</span>
+              </div>
+            </article>
+          `;
+        })
+        .join("")}</div>`;
+
+      container.querySelectorAll("[data-repo-id]").forEach((card) => {
+        const selectHandler = () => {
+          const id = Number(card.getAttribute("data-repo-id"));
+          const repo = state.repos.find((x) => x.id === id);
+          if (repo) selectRepository(repo);
+        };
+        card.addEventListener("click", selectHandler);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            selectHandler();
+          }
+        });
+      });
+    }
+
+    async function selectRepository(repo) {
+      state.selectedRepo = repo;
+      state.currentBranch = repo.default_branch || "main";
+      state.currentDir = "";
+      state.openFile = null;
+      state.activePlaylistFile = null;
+      state.activeTab = "playlists";
+
+      document.getElementById("topbarRepoName").textContent = repo.full_name;
+      const readOnlyChip = document.getElementById("readOnlyChip");
+      if (canPushRepo()) readOnlyChip.classList.add("hidden");
+      else readOnlyChip.classList.remove("hidden");
+
+      renderScreen("workspace");
+      setActiveTab("playlists");
+      await loadBranchesAndWorkspace();
+    }
+
+    async function loadBranchesAndWorkspace() {
+      const repo = state.selectedRepo;
+      if (!repo) return;
+      state.workspaceLoading = true;
+      renderWorkspaceTab();
+
+      try {
+        const branches = await fetchAllPaginated(
+          `/repos/${repo.owner.login}/${repo.name}/branches?per_page=100`
+        );
+        state.branches = branches;
+        if (branches.length && !branches.some((b) => b.name === state.currentBranch)) {
+          state.currentBranch = branches[0].name;
+        }
+        const branchSel = document.getElementById("branchSelect");
+        branchSel.innerHTML = branches.length
+          ? branches
+              .map(
+                (b) =>
+                  `<option value="${escapeHtml(b.name)}" ${
+                    b.name === state.currentBranch ? "selected" : ""
+                  }>${escapeHtml(b.name)}</option>`
+              )
+              .join("")
+          : `<option value="${escapeHtml(state.currentBranch)}">${escapeHtml(state.currentBranch)}</option>`;
+
+        await loadWorkspaceData();
+      } catch (err) {
+        state.workspaceLoading = false;
+        showToast(err.message, "error", 6000);
+        if (err.status === 401) handleUnauthorized();
+        renderWorkspaceTab();
+      }
+    }
+
+    async function loadWorkspaceData() {
+      const repo = state.selectedRepo;
+      const branch = state.currentBranch;
+      if (!repo || !branch) return;
+
+      state.workspaceLoading = true;
+      state.openFile = null;
+      state.activePlaylistFile = null;
+      renderWorkspaceTab();
+
+      try {
+        // 1. Fetch recursive tree for branch
+        let treeItems = [];
+        let truncated = false;
+        try {
+          const { data: treeData } = await ghFetch(
+            `/repos/${repo.owner.login}/${repo.name}/git/trees/${encodeURIComponent(branch)}?recursive=1`
+          );
+          treeItems = Array.isArray(treeData.tree) ? treeData.tree : [];
+          truncated = Boolean(treeData.truncated);
+        } catch (treeErr) {
+          // Empty repo returns 409 or 404 on git/trees
+          if (treeErr.status === 409 || treeErr.status === 404) {
+            treeItems = [];
+          } else {
+            throw treeErr;
+          }
+        }
+
+        state.tree = treeItems;
+        state.treeTruncated = truncated;
+        document.getElementById("tabBadgeFiles").textContent = String(
+          treeItems.filter((t) => t.type === "blob").length
+        );
+
+        // 2. Discover playlists.json
+        await discoverAndLoadPlaylists();
+
+        // 3. Discover DNS files
+        await discoverAndLoadDns();
+      } catch (err) {
+        showToast(err.message || "فشل تحميل بيانات المستودع.", "error", 6000);
+        if (err.status === 401) handleUnauthorized();
+      } finally {
+        state.workspaceLoading = false;
+        renderWorkspaceTab();
+      }
+    }
+
+    // =========================================================================
+    // 7. ALAMMNA PLAYLISTS DISCOVERY & MANAGEMENT
+    // =========================================================================
+    function detectPlaylistKeyMap(items) {
+      const first = items.find((x) => x && typeof x === "object") || {};
+      const pick = (candidates, def) => candidates.find((k) => k in first) || def;
+      return {
+        id: pick(["id", "playlistId", "code", "key"], "id"),
+        name: pick(["name", "title", "label"], "name"),
+        file: pick(["file", "filename", "path", "json", "url"], "file"),
+        enabled: pick(["enabled", "active", "isEnabled", "status"], "enabled")
+      };
+    }
+
+    function analyzePlaylistsJson(parsed) {
+      if (Array.isArray(parsed)) {
+        return {
+          mode: "array",
+          wrapperKey: null,
+          items: parsed,
+          keyMap: detectPlaylistKeyMap(parsed)
+        };
+      }
+      if (parsed && typeof parsed === "object") {
+        const preferredKeys = ["playlists", "items", "lists", "data", "channels"];
+        let arrayKey = preferredKeys.find((k) => Array.isArray(parsed[k]));
+        if (!arrayKey) {
+          arrayKey = Object.keys(parsed).find((k) => Array.isArray(parsed[k]));
+        }
+        if (arrayKey) {
+          const arr = parsed[arrayKey];
+          return {
+            mode: "wrapped",
+            wrapperKey: arrayKey,
+            items: arr,
+            keyMap: detectPlaylistKeyMap(arr)
+          };
+        }
+      }
+      return null;
+    }
+
+    function buildPlaylistsJsonText() {
+      if (state.playlistContainerMode === "array") {
+        return JSON.stringify(state.playlistItems, null, 2) + "\n";
+      }
+      const clone = deepClone(state.playlistRawObj || {});
+      clone[state.playlistWrapperKey] = state.playlistItems;
+      return JSON.stringify(clone, null, 2) + "\n";
+    }
+
+    async function discoverAndLoadPlaylists() {
+      const candidates = state.tree
+        .filter((t) => t.type === "blob" && /(^|\/)playlists\.json$/i.test(t.path))
+        .map((t) => t.path)
+        .sort((a, b) => a.length - b.length);
+
+      state.playlistIndexCandidates = candidates;
+      if (!candidates.length) {
+        state.playlistIndexPath = null;
+        state.playlistIndexSha = null;
+        state.playlistRawObj = null;
+        state.playlistItems = [];
+        document.getElementById("tabBadgePlaylists").textContent = "0";
+        return;
+      }
+
+      if (!state.playlistIndexPath || !candidates.includes(state.playlistIndexPath)) {
+        state.playlistIndexPath = candidates[0];
+      }
+
+      await loadPlaylistIndexFile(state.playlistIndexPath);
+    }
+
+    async function loadPlaylistIndexFile(path) {
+      const repo = state.selectedRepo;
+      try {
+        const file = await getFileFromGitHub(repo.owner.login, repo.name, path, state.currentBranch);
+        state.playlistIndexPath = file.path;
+        state.playlistIndexSha = file.sha;
+
+        const check = validateJsonText(file.text);
+        if (!check.valid) {
+          state.playlistRawObj = null;
+          state.playlistItems = [];
+          showToast(`ملف ${path} يحتوي على JSON غير صالح: ${check.error}`, "error", 6500);
+          return;
+        }
+
+        const analyzed = analyzePlaylistsJson(check.parsed);
+        if (!analyzed) {
+          state.playlistRawObj = check.parsed;
+          state.playlistItems = [];
+          showToast(`بنية ${path} لا تحتوي على مصفوفة قوائم معروفة.`, "warning", 5500);
+          return;
+        }
+
+        state.playlistRawObj = check.parsed;
+        state.playlistContainerMode = analyzed.mode;
+        state.playlistWrapperKey = analyzed.wrapperKey;
+        state.playlistItems = analyzed.items;
+        state.playlistKeyMap = analyzed.keyMap;
+        document.getElementById("tabBadgePlaylists").textContent = String(analyzed.items.length);
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function resolvePlaylistFilePath(fileRef) {
+      if (!fileRef) return "";
+      const cleanRef = String(fileRef).replace(/^\/+/, "");
+      // Check exact match in tree
+      if (state.tree.some((t) => t.type === "blob" && t.path === cleanRef)) return cleanRef;
+      // Check relative to playlists.json directory
+      const idxDir = dirName(state.playlistIndexPath || "");
+      const rel = joinPath(idxDir, cleanRef);
+      if (state.tree.some((t) => t.type === "blob" && t.path === rel)) return rel;
+      // Default to relative path
+      return rel || cleanRef;
+    }
+
+    function suggestNextPlaylistDefaults() {
+      const km = state.playlistKeyMap;
+      const items = state.playlistItems || [];
+      let maxNum = 0;
+      let existingPrefix = "";
+      for (const item of items) {
+        const idStr = String(item[km.id] || "");
+        const nameStr = String(item[km.name] || "");
+        const fileStr = String(item[km.file] || "");
+        if (!existingPrefix && fileStr.includes("/")) {
+          existingPrefix = dirName(fileStr) + "/";
+        }
+        for (const s of [idStr, nameStr, fileStr]) {
+          const m = s.match(/(\d+)/);
+          if (m) maxNum = Math.max(maxNum, Number(m[1]));
+        }
+      }
+      const next = maxNum + 1 || items.length + 1;
+      const fileName = `${existingPrefix}al${next}.json`;
+      return {
+        id: `al${next}`,
+        name: `عالمنا A${next}`,
+        file: fileName,
+        enabled: true
+      };
+    }
+
+    function renderPlaylistsTab() {
+      const container = document.getElementById("tabPlaylists");
+      if (state.workspaceLoading) {
+        container.innerHTML = `<div class="state-box"><div class="spinner"></div><div>جاري فحص قوائم عالمنا...</div></div>`;
+        return;
+      }
+
+      if (state.activePlaylistFile) {
+        renderPlaylistContentEditor(container);
+        return;
+      }
+
+      if (!state.playlistIndexPath) {
+        container.innerHTML = `
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">إدارة قوائم عالمنا</h2>
+              <p class="section-subtitle">لم يتم العثور على ملف <span class="ltr mono">playlists.json</span> في هذا الفرع.</p>
+            </div>
+          </div>
+          <div class="state-box">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            <div>لا يوجد ملف <span class="ltr mono">playlists.json</span> في المستودع.</div>
+            ${
+              canPushRepo()
+                ? `<button type="button" class="btn btn-primary" id="initPlaylistsBtn">إنشاء playlists.json جديد</button>`
+                : ""
+            }
+          </div>
+        `;
+        const initBtn = container.querySelector("#initPlaylistsBtn");
+        if (initBtn) {
+          initBtn.onclick = () => {
+            const initialJson = JSON.stringify([], null, 2) + "\n";
+            requestGitHubCommit({
+              title: "إنشاء فهرس قوائم عالمنا",
+              defaultMessage: "Initialize playlists.json",
+              operations: [{ type: "create", path: "playlists.json", text: initialJson }]
+            });
+          };
+        }
+        return;
+      }
+
+      const km = state.playlistKeyMap;
+      const items = state.playlistItems || [];
+
+      const selectorHtml =
+        state.playlistIndexCandidates.length > 1
+          ? `
+          <select id="playlistIndexSelect" class="select" style="width:auto;min-height:38px;padding:6px 10px">
+            ${state.playlistIndexCandidates
+              .map(
+                (p) =>
+                  `<option value="${escapeHtml(p)}" ${
+                    p === state.playlistIndexPath ? "selected" : ""
+                  }>${escapeHtml(p)}</option>`
+              )
+              .join("")}
+          </select>`
+          : `<span class="badge badge-accent ltr mono">${escapeHtml(state.playlistIndexPath)}</span>`;
+
+      const cardsHtml = items.length
+        ? `<div class="grid-cards">${items
+            .map((item, idx) => {
+              const idVal = item[km.id] ?? "";
+              const nameVal = item[km.name] ?? "";
+              const fileVal = item[km.file] ?? "";
+              const enabledVal = Boolean(item[km.enabled]);
+              const resolvedPath = resolvePlaylistFilePath(fileVal);
+              const fileExists =
+                fileVal && state.tree.some((t) => t.type === "blob" && t.path === resolvedPath);
+
+              return `
+                <article class="card">
+                  <div class="card-top">
+                    <div style="min-width:0">
+                      <div class="meta-row" style="margin-bottom:6px">
+                        <span class="badge badge-accent ltr mono">${escapeHtml(idVal)}</span>
+                        <span class="badge ${enabledVal ? "badge-success" : "badge-danger"}">
+                          ${enabledVal ? "مفعلة" : "معطلة"}
+                        </span>
+                      </div>
+                      <h3 class="card-title">${escapeHtml(nameVal || "بدون اسم")}</h3>
+                    </div>
+                    <button
+                      type="button"
+                      class="switch-btn ${enabledVal ? "on" : ""}"
+                      data-pl-toggle="${idx}"
+                      aria-label="${enabledVal ? "تعطيل القائمة" : "تفعيل القائمة"}"
+                      title="${enabledVal ? "تعطيل" : "تفعيل"}"
+                      ${!canPushRepo() ? "disabled" : ""}
+                    ></button>
+                  </div>
+
+                  <div class="meta-row">
+                    <span>الملف:</span>
+                    <span class="ltr mono" style="color:var(--text-primary)">${escapeHtml(fileVal || "غير محدد")}</span>
+                    ${
+                      fileVal
+                        ? fileExists
+                          ? `<span class="badge badge-success">موجود</span>`
+                          : `<span class="badge badge-warning">غير موجود في الفرع</span>`
+                        : ""
+                    }
+                  </div>
+
+                  <div class="card-actions">
+                    <button type="button" class="btn btn-primary btn-sm" data-pl-open-json="${idx}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      <span>تعديل JSON و Source</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-pl-edit="${idx}" ${!canPushRepo() ? "disabled" : ""}>
+                      <span>تعديل البيانات</span>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" data-pl-delete="${idx}" ${!canPushRepo() ? "disabled" : ""}>
+                      <span>حذف</span>
+                    </button>
+                  </div>
+                </article>
+              `;
+            })
+            .join("")}</div>`
+        : `
+          <div class="state-box">
+            <div>ملف <span class="ltr mono">${escapeHtml(state.playlistIndexPath)}</span> فارغ حاليا.</div>
+            ${canPushRepo() ? `<button type="button" class="btn btn-primary" id="addFirstPlaylistBtn">إضافة أول قائمة</button>` : ""}
+          </div>
+        `;
+
+      container.innerHTML = `
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">
+              <span>إدارة قوائم عالمنا</span>
+              ${selectorHtml}
+            </h2>
+            <p class="section-subtitle">تحكم كامل في <span class="ltr mono">playlists.json</span> وملفات القوائم ومصادر IPTV (<span class="ltr mono">source</span>) مع الحفاظ على البنية الأصلية.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="btn btn-secondary btn-sm" id="editRawPlaylistsIndexBtn">
+              <span>تحرير playlists.json الخام</span>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" id="addPlaylistBtn" ${!canPushRepo() ? "disabled" : ""}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>إضافة قائمة جديدة</span>
+            </button>
+          </div>
+        </div>
+        ${cardsHtml}
+      `;
+
+      const idxSel = container.querySelector("#playlistIndexSelect");
+      if (idxSel) {
+        idxSel.onchange = async () => {
+          await loadPlaylistIndexFile(idxSel.value);
+          renderPlaylistsTab();
+        };
+      }
+
+      const addBtn = container.querySelector("#addPlaylistBtn") || container.querySelector("#addFirstPlaylistBtn");
+      if (addBtn) addBtn.onclick = openAddPlaylistModal;
+
+      container.querySelector("#editRawPlaylistsIndexBtn").onclick = () => {
+        openRawFileInFileManager(state.playlistIndexPath);
+      };
+
+      container.querySelectorAll("[data-pl-toggle]").forEach((btn) => {
+        btn.onclick = () => togglePlaylistEnabled(Number(btn.getAttribute("data-pl-toggle")));
+      });
+      container.querySelectorAll("[data-pl-open-json]").forEach((btn) => {
+        btn.onclick = () => openPlaylistJsonEditor(Number(btn.getAttribute("data-pl-open-json")));
+      });
+      container.querySelectorAll("[data-pl-edit]").forEach((btn) => {
+        btn.onclick = () => openEditPlaylistMetaModal(Number(btn.getAttribute("data-pl-edit")));
+      });
+      container.querySelectorAll("[data-pl-delete]").forEach((btn) => {
+        btn.onclick = () => openDeletePlaylistModal(Number(btn.getAttribute("data-pl-delete")));
+      });
+    }
+
+    function togglePlaylistEnabled(idx) {
+      const km = state.playlistKeyMap;
+      const updatedItems = deepClone(state.playlistItems);
+      const item = updatedItems[idx];
+      if (!item) return;
+      const nextVal = !Boolean(item[km.enabled]);
+      item[km.enabled] = nextVal;
+
+      const updatedText =
+        state.playlistContainerMode === "array"
+          ? JSON.stringify(updatedItems, null, 2) + "\n"
+          : (() => {
+              const c = deepClone(state.playlistRawObj || {});
+              c[state.playlistWrapperKey] = updatedItems;
+              return JSON.stringify(c, null, 2) + "\n";
+            })();
+
+      requestGitHubCommit({
+        title: nextVal ? "تفعيل القائمة" : "تعطيل القائمة",
+        defaultMessage: `${nextVal ? "Enable" : "Disable"} playlist ${item[km.id] || item[km.name] || ""}`,
+        operations: [
+          {
+            type: "update",
+            path: state.playlistIndexPath,
+            sha: state.playlistIndexSha,
+            text: updatedText
+          }
+        ]
+      });
+    }
+
+    async function findTemplatePlaylistStructure() {
+      const km = state.playlistKeyMap;
+      const repo = state.selectedRepo;
+      for (const item of state.playlistItems) {
+        const p = resolvePlaylistFilePath(item[km.file]);
+        if (p && state.tree.some((t) => t.type === "blob" && t.path === p)) {
+          try {
+            const f = await getFileFromGitHub(repo.owner.login, repo.name, p, state.currentBranch);
+            const parsed = JSON.parse(f.text);
+            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+              return parsed;
+            }
+          } catch {
+            // ignore and continue
+          }
+        }
+      }
+      return null;
+    }
+
+    async function openAddPlaylistModal() {
+      const defaults = suggestNextPlaylistDefaults();
+      const km = state.playlistKeyMap;
+      const templateObj = await findTemplatePlaylistStructure();
+
+      // Build initial JSON content preserving sibling schema if available
+      const buildStarterJson = (idVal, nameVal, sourceVal) => {
+        if (templateObj) {
+          const clone = deepClone(templateObj);
+          if ("id" in clone) clone.id = idVal;
+          if ("name" in clone) clone.name = nameVal;
+          if ("title" in clone) clone.title = nameVal;
+          clone.source = sourceVal;
+          return JSON.stringify(clone, null, 2);
+        }
+        return JSON.stringify({ id: idVal, name: nameVal, source: sourceVal }, null, 2);
+      };
+
+      openModal({
+        title: "إضافة قائمة عالمنا جديدة",
+        bodyHtml: `
+          <div class="kv-grid">
+            <div class="field-group">
+              <label class="field-label" for="newPlId">المعرف (${escapeHtml(km.id)})</label>
+              <input type="text" id="newPlId" class="input ltr mono" value="${escapeHtml(defaults.id)}" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="newPlName">اسم القائمة (${escapeHtml(km.name)})</label>
+              <input type="text" id="newPlName" class="input" value="${escapeHtml(defaults.name)}" />
+            </div>
+          </div>
+          <div class="kv-grid">
+            <div class="field-group">
+              <label class="field-label" for="newPlFile">اسم ملف JSON (${escapeHtml(km.file)})</label>
+              <input type="text" id="newPlFile" class="input ltr mono" value="${escapeHtml(defaults.file)}" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">الحالة (${escapeHtml(km.enabled)})</label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="newPlEnabled" checked />
+                <span>تفعيل القائمة فورا</span>
+              </label>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="newPlSource">مصدر IPTV (source)</label>
+            <input type="text" id="newPlSource" class="input ltr mono" placeholder="https://example.com/playlist.m3u" />
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <div class="field-label">
+              <span>محتوى ملف القائمة JSON</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="fmtNewPlJsonBtn">تنسيق JSON</button>
+            </div>
+            <textarea id="newPlJsonText" class="code-textarea" style="min-height:190px">${escapeHtml(
+              buildStarterJson(defaults.id, defaults.name, "")
+            )}</textarea>
+            <div id="newPlJsonStatus" class="field-hint" style="margin-top:6px"></div>
+          </div>
+        `,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "معاينة وإنشاء القائمة",
+            className: "btn-primary",
+            onClick: (backdrop) => {
+              const idVal = backdrop.querySelector("#newPlId").value.trim();
+              const nameVal = backdrop.querySelector("#newPlName").value.trim();
+              const fileVal = backdrop.querySelector("#newPlFile").value.trim();
+              const enabledVal = backdrop.querySelector("#newPlEnabled").checked;
+              const jsonText = backdrop.querySelector("#newPlJsonText").value;
+
+              if (!idVal || !nameVal || !fileVal) {
+                showToast("يرجى تعبئة المعرف والاسم واسم الملف.", "warning");
+                return;
+              }
+              if (state.playlistItems.some((it) => String(it[km.id]) === idVal)) {
+                showToast(`المعرف ${idVal} مستخدم بالفعل في قائمة أخرى.`, "warning");
+                return;
+              }
+              const check = validateJsonText(jsonText);
+              if (!check.valid) {
+                showToast(`خطأ في صيغة JSON: ${check.error}`, "error");
+                return;
+              }
+
+              const newFilePath = resolvePlaylistFilePath(fileVal);
+              const existsInTree = state.tree.find((t) => t.type === "blob" && t.path === newFilePath);
+
+              const newEntry = {
+                [km.id]: idVal,
+                [km.name]: nameVal,
+                [km.file]: fileVal,
+                [km.enabled]: enabledVal
+              };
+              const updatedItems = [...deepClone(state.playlistItems), newEntry];
+              const updatedIndexText =
+                state.playlistContainerMode === "array"
+                  ? JSON.stringify(updatedItems, null, 2) + "\n"
+                  : (() => {
+                      const c = deepClone(state.playlistRawObj || {});
+                      c[state.playlistWrapperKey] = updatedItems;
+                      return JSON.stringify(c, null, 2) + "\n";
+                    })();
+
+              const ops = [
+                {
+                  type: existsInTree ? "update" : "create",
+                  path: newFilePath,
+                  sha: existsInTree ? existsInTree.sha : undefined,
+                  text: JSON.stringify(check.parsed, null, 2) + "\n"
+                },
+                {
+                  type: "update",
+                  path: state.playlistIndexPath,
+                  sha: state.playlistIndexSha,
+                  text: updatedIndexText
+                }
+              ];
+
+              requestGitHubCommit({
+                title: `إضافة قائمة ${nameVal}`,
+                defaultMessage: `Add playlist ${nameVal} (${fileVal}) and update playlists.json`,
+                operations: ops
+              });
+            }
+          }
+        ],
+        onMount: (backdrop) => {
+          const idEl = backdrop.querySelector("#newPlId");
+          const nameEl = backdrop.querySelector("#newPlName");
+          const srcEl = backdrop.querySelector("#newPlSource");
+          const jsonEl = backdrop.querySelector("#newPlJsonText");
+          const statusEl = backdrop.querySelector("#newPlJsonStatus");
+
+          const syncToJson = () => {
+            const check = validateJsonText(jsonEl.value);
+            if (check.valid && check.parsed && typeof check.parsed === "object" && !Array.isArray(check.parsed)) {
+              if ("id" in check.parsed) check.parsed.id = idEl.value.trim();
+              if ("name" in check.parsed) check.parsed.name = nameEl.value.trim();
+              if ("title" in check.parsed) check.parsed.title = nameEl.value.trim();
+              check.parsed.source = srcEl.value;
+              jsonEl.value = JSON.stringify(check.parsed, null, 2);
+              statusEl.textContent = "JSON صالح";
+              statusEl.style.color = "var(--success)";
+            }
+          };
+
+          idEl.addEventListener("input", syncToJson);
+          nameEl.addEventListener("input", syncToJson);
+          srcEl.addEventListener("input", syncToJson);
+
+          jsonEl.addEventListener("input", () => {
+            const check = validateJsonText(jsonEl.value);
+            if (check.valid) {
+              statusEl.textContent = "JSON صالح";
+              statusEl.style.color = "var(--success)";
+              if (check.parsed && typeof check.parsed === "object" && "source" in check.parsed && typeof check.parsed.source === "string") {
+                srcEl.value = check.parsed.source;
+              }
+            } else {
+              statusEl.textContent = `JSON غير صالح: ${check.error}`;
+              statusEl.style.color = "var(--danger)";
+            }
+          });
+
+          backdrop.querySelector("#fmtNewPlJsonBtn").onclick = () => {
+            const check = validateJsonText(jsonEl.value);
+            if (!check.valid) {
+              showToast(`تعذر التنسيق: ${check.error}`, "error");
+              return;
+            }
+            jsonEl.value = JSON.stringify(check.parsed, null, 2);
+          };
+        }
+      });
+    }
+
+    function openEditPlaylistMetaModal(idx) {
+      const km = state.playlistKeyMap;
+      const item = state.playlistItems[idx];
+      if (!item) return;
+
+      const oldFileVal = String(item[km.file] || "");
+      const oldResolvedPath = resolvePlaylistFilePath(oldFileVal);
+
+      openModal({
+        title: `تعديل بيانات القائمة: ${item[km.name] || item[km.id] || ""}`,
+        bodyHtml: `
+          <div class="kv-grid">
+            <div class="field-group">
+              <label class="field-label" for="editPlId">المعرف (${escapeHtml(km.id)})</label>
+              <input type="text" id="editPlId" class="input ltr mono" value="${escapeHtml(item[km.id] ?? "")}" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="editPlName">اسم القائمة (${escapeHtml(km.name)})</label>
+              <input type="text" id="editPlName" class="input" value="${escapeHtml(item[km.name] ?? "")}" />
+            </div>
+          </div>
+          <div class="kv-grid">
+            <div class="field-group">
+              <label class="field-label" for="editPlFile">اسم ملف JSON (${escapeHtml(km.file)})</label>
+              <input type="text" id="editPlFile" class="input ltr mono" value="${escapeHtml(oldFileVal)}" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">الحالة (${escapeHtml(km.enabled)})</label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="editPlEnabled" ${item[km.enabled] ? "checked" : ""} />
+                <span>القائمة مفعلة</span>
+              </label>
+            </div>
+          </div>
+          <div class="info-banner" style="margin-bottom:0">
+            إذا قمت بتغيير اسم الملف، سيتم إنشاء الملف الجديد بنفس المحتوى وحذف الملف القديم تلقائيا، مع الحفاظ على جميع الحقول الإضافية في السجل.
+          </div>
+        `,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "معاينة وحفظ التعديلات",
+            className: "btn-primary",
+            onClick: async (backdrop) => {
+              const idVal = backdrop.querySelector("#editPlId").value.trim();
+              const nameVal = backdrop.querySelector("#editPlName").value.trim();
+              const newFileVal = backdrop.querySelector("#editPlFile").value.trim();
+              const enabledVal = backdrop.querySelector("#editPlEnabled").checked;
+
+              if (!idVal || !nameVal || !newFileVal) {
+                showToast("يرجى تعبئة المعرف والاسم واسم الملف.", "warning");
+                return;
+              }
+
+              const updatedItems = deepClone(state.playlistItems);
+              updatedItems[idx][km.id] = idVal;
+              updatedItems[idx][km.name] = nameVal;
+              updatedItems[idx][km.file] = newFileVal;
+              updatedItems[idx][km.enabled] = enabledVal;
+
+              const updatedIndexText =
+                state.playlistContainerMode === "array"
+                  ? JSON.stringify(updatedItems, null, 2) + "\n"
+                  : (() => {
+                      const c = deepClone(state.playlistRawObj || {});
+                      c[state.playlistWrapperKey] = updatedItems;
+                      return JSON.stringify(c, null, 2) + "\n";
+                    })();
+
+              const ops = [];
+              const newResolvedPath = resolvePlaylistFilePath(newFileVal);
+
+              if (newFileVal !== oldFileVal && oldResolvedPath) {
+                const oldExists = state.tree.some((t) => t.type === "blob" && t.path === oldResolvedPath);
+                if (oldExists) {
+                  try {
+                    const oldFile = await getFileFromGitHub(
+                      state.selectedRepo.owner.login,
+                      state.selectedRepo.name,
+                      oldResolvedPath,
+                      state.currentBranch
+                    );
+                    const targetExists = state.tree.find((t) => t.type === "blob" && t.path === newResolvedPath);
+                    ops.push({
+                      type: targetExists ? "update" : "create",
+                      path: newResolvedPath,
+                      sha: targetExists ? targetExists.sha : undefined,
+                      text: oldFile.text
+                    });
+                    ops.push({
+                      type: "delete",
+                      path: oldResolvedPath,
+                      sha: oldFile.sha
+                    });
+                  } catch (err) {
+                    showToast(err.message, "error");
+                    return;
+                  }
+                }
+              }
+
+              ops.push({
+                type: "update",
+                path: state.playlistIndexPath,
+                sha: state.playlistIndexSha,
+                text: updatedIndexText
+              });
+
+              requestGitHubCommit({
+                title: `تحديث بيانات القائمة ${nameVal}`,
+                defaultMessage: `Update playlist ${nameVal} (${idVal})`,
+                operations: ops
+              });
+            }
+          }
+        ]
+      });
+    }
+
+    function openDeletePlaylistModal(idx) {
+      const km = state.playlistKeyMap;
+      const item = state.playlistItems[idx];
+      if (!item) return;
+
+      const fileVal = String(item[km.file] || "");
+      const resolvedPath = resolvePlaylistFilePath(fileVal);
+      const treeMatch = state.tree.find((t) => t.type === "blob" && t.path === resolvedPath);
+
+      openModal({
+        title: "تأكيد حذف القائمة",
+        bodyHtml: `
+          <p style="margin:0">هل أنت متأكد من حذف القائمة <b>${escapeHtml(item[km.name] || item[km.id])}</b> (<span class="ltr mono">${escapeHtml(item[km.id])}</span>)؟</p>
+          ${
+            treeMatch
+              ? `
+            <label class="checkbox-row">
+              <input type="checkbox" id="deleteLinkedPlaylistFile" checked />
+              <span>حذف ملف القائمة المرتبط أيضا (<span class="ltr mono">${escapeHtml(resolvedPath)}</span>)</span>
+            </label>`
+              : `<p class="field-hint">سيتم إزالة السجل من <span class="ltr mono">${escapeHtml(state.playlistIndexPath)}</span>.</p>`
+          }
+        `,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "متابعة الحذف",
+            className: "btn-danger",
+            onClick: async (backdrop) => {
+              const delFileChk = backdrop.querySelector("#deleteLinkedPlaylistFile");
+              const shouldDeleteFile = delFileChk ? delFileChk.checked : false;
+
+              const updatedItems = deepClone(state.playlistItems);
+              updatedItems.splice(idx, 1);
+
+              const updatedIndexText =
+                state.playlistContainerMode === "array"
+                  ? JSON.stringify(updatedItems, null, 2) + "\n"
+                  : (() => {
+                      const c = deepClone(state.playlistRawObj || {});
+                      c[state.playlistWrapperKey] = updatedItems;
+                      return JSON.stringify(c, null, 2) + "\n";
+                    })();
+
+              const ops = [
+                {
+                  type: "update",
+                  path: state.playlistIndexPath,
+                  sha: state.playlistIndexSha,
+                  text: updatedIndexText
+                }
+              ];
+
+              if (shouldDeleteFile && treeMatch) {
+                ops.push({
+                  type: "delete",
+                  path: resolvedPath,
+                  sha: treeMatch.sha
+                });
+              }
+
+              requestGitHubCommit({
+                title: `حذف القائمة ${item[km.name] || item[km.id]}`,
+                defaultMessage: `Delete playlist ${item[km.id] || item[km.name]}`,
+                operations: ops
+              });
+            }
+          }
+        ]
+      });
+    }
+
+    async function openPlaylistJsonEditor(idx) {
+      const km = state.playlistKeyMap;
+      const item = state.playlistItems[idx];
+      if (!item) return;
+
+      const fileVal = String(item[km.file] || "");
+      if (!fileVal) {
+        showToast("لا يوجد اسم ملف محدد لهذه القائمة.", "warning");
+        return;
+      }
+
+      const resolvedPath = resolvePlaylistFilePath(fileVal);
+      const repo = state.selectedRepo;
+      state.workspaceLoading = true;
+      renderPlaylistsTab();
+
+      try {
+        let fileData = null;
+        let isNew = false;
+        try {
+          fileData = await getFileFromGitHub(repo.owner.login, repo.name, resolvedPath, state.currentBranch);
+        } catch (err) {
+          if (err.status === 404) {
+            isNew = true;
+            const templateObj = await findTemplatePlaylistStructure();
+            const starter = templateObj ? deepClone(templateObj) : { id: item[km.id], name: item[km.name], source: "" };
+            if ("id" in starter) starter.id = item[km.id];
+            if ("name" in starter) starter.name = item[km.name];
+            if (!("source" in starter)) starter.source = "";
+            fileData = {
+              path: resolvedPath,
+              sha: null,
+              text: JSON.stringify(starter, null, 2) + "\n",
+              isBinary: false
+            };
+          } else {
+            throw err;
+          }
+        }
+
+        const check = validateJsonText(fileData.text);
+        state.activePlaylistFile = {
+          itemIndex: idx,
+          itemName: item[km.name] || item[km.id],
+          path: fileData.path,
+          sha: fileData.sha,
+          isNew,
+          rawText: check.valid ? JSON.stringify(check.parsed, null, 2) : fileData.text
+        };
+      } catch (err) {
+        showToast(err.message, "error", 6000);
+      } finally {
+        state.workspaceLoading = false;
+        renderPlaylistsTab();
+      }
+    }
+
+    function renderPlaylistContentEditor(container) {
+      const pf = state.activePlaylistFile;
+      const check = validateJsonText(pf.rawText);
+      const hasSourceField =
+        check.valid &&
+        check.parsed &&
+        typeof check.parsed === "object" &&
+        !Array.isArray(check.parsed);
+
+      const sourceVal = hasSourceField
+        ? typeof check.parsed.source === "string"
+          ? check.parsed.source
+          : check.parsed.source !== undefined
+          ? JSON.stringify(check.parsed.source)
+          : ""
+        : "";
+
+      container.innerHTML = `
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">
+              <button type="button" class="btn btn-secondary btn-sm" id="backToPlaylistsBtn">← رجوع للقوائم</button>
+              <span>تحرير: ${escapeHtml(pf.itemName)}</span>
+            </h2>
+            <p class="section-subtitle ltr mono">${escapeHtml(pf.path)} ${pf.isNew ? "(ملف جديد سيُنشأ عند الحفظ)" : ""}</p>
+          </div>
+          <span class="badge ${check.valid ? "badge-success" : "badge-danger"}" id="plJsonValidBadge">
+            ${check.valid ? "JSON صالح" : "JSON غير صالح"}
+          </span>
+        </div>
+
+        <div class="editor-shell">
+          <div class="editor-header">
+            <div class="meta-row">
+              <span class="badge ltr mono">${escapeHtml(pf.path)}</span>
+              ${pf.sha ? `<span class="badge ltr mono">SHA: ${escapeHtml(pf.sha.slice(0, 7))}</span>` : ""}
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="btn btn-secondary btn-sm" id="formatPlJsonBtn">تنسيق JSON</button>
+              <button type="button" class="btn btn-primary btn-sm" id="savePlJsonBtn" ${!canPushRepo() ? "disabled" : ""}>حفظ إلى GitHub</button>
+            </div>
+          </div>
+
+          <div class="editor-body">
+            ${
+              hasSourceField
+                ? `
+              <div class="field-group">
+                <label class="field-label" for="plSourceInput">
+                  <span>مصدر IPTV السريع (<span class="ltr mono">source</span>)</span>
+                  <span class="field-hint">يتزامن مباشرة مع ملف JSON دون المساس ببقية الحقول</span>
+                </label>
+                <input type="text" id="plSourceInput" class="input ltr mono" value="${escapeHtml(sourceVal)}" placeholder="https://..." />
+              </div>`
+                : ""
+            }
+
+            <div class="field-group" style="margin-bottom:0">
+              <label class="field-label" for="plJsonEditor">محتوى JSON الكامل</label>
+              <textarea id="plJsonEditor" class="code-textarea" spellcheck="false">${escapeHtml(pf.rawText)}</textarea>
+              <div id="plJsonErrorLine" class="field-hint" style="margin-top:8px;color:var(--danger)">${
+                check.valid ? "" : escapeHtml(check.error)
+              }</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.querySelector("#backToPlaylistsBtn").onclick = () => {
+        state.activePlaylistFile = null;
+        renderPlaylistsTab();
+      };
+
+      const sourceInput = container.querySelector("#plSourceInput");
+      const editor = container.querySelector("#plJsonEditor");
+      const badge = container.querySelector("#plJsonValidBadge");
+      const errLine = container.querySelector("#plJsonErrorLine");
+
+      const updateValidationUi = (txt) => {
+        pf.rawText = txt;
+        const c = validateJsonText(txt);
+        badge.className = `badge ${c.valid ? "badge-success" : "badge-danger"}`;
+        badge.textContent = c.valid ? "JSON صالح" : "JSON غير صالح";
+        errLine.textContent = c.valid ? "" : c.error;
+        return c;
+      };
+
+      if (sourceInput) {
+        sourceInput.addEventListener("input", () => {
+          const c = validateJsonText(editor.value);
+          if (c.valid && c.parsed && typeof c.parsed === "object" && !Array.isArray(c.parsed)) {
+            c.parsed.source = sourceInput.value;
+            const nextTxt = JSON.stringify(c.parsed, null, 2);
+            editor.value = nextTxt;
+            updateValidationUi(nextTxt);
+          }
+        });
+      }
+
+      editor.addEventListener("input", () => {
+        const c = updateValidationUi(editor.value);
+        if (sourceInput && c.valid && c.parsed && typeof c.parsed === "object" && typeof c.parsed.source === "string") {
+          sourceInput.value = c.parsed.source;
+        }
+      });
+
+      enableTabInTextarea(editor);
+
+      container.querySelector("#formatPlJsonBtn").onclick = () => {
+        const c = validateJsonText(editor.value);
+        if (!c.valid) {
+          showToast(`لا يمكن التنسيق لوجود خطأ: ${c.error}`, "error");
+          return;
+        }
+        const formatted = JSON.stringify(c.parsed, null, 2);
+        editor.value = formatted;
+        updateValidationUi(formatted);
+        showToast("تم تنسيق JSON.", "success", 2000);
+      };
+
+      container.querySelector("#savePlJsonBtn").onclick = () => {
+        const c = validateJsonText(editor.value);
+        if (!c.valid) {
+          showToast(`يرجى تصحيح صيغة JSON قبل الحفظ: ${c.error}`, "error", 5000);
+          return;
+        }
+        requestGitHubCommit({
+          title: `حفظ ملف القائمة ${pf.path}`,
+          defaultMessage: `${pf.isNew ? "Create" : "Update"} playlist file ${pf.path}`,
+          operations: [
+            {
+              type: pf.isNew ? "create" : "update",
+              path: pf.path,
+              sha: pf.sha,
+              text: JSON.stringify(c.parsed, null, 2) + "\n"
+            }
+          ],
+          onSuccess: async () => {
+            state.activePlaylistFile = null;
+          }
+        });
+      };
+    }
+
+    // =========================================================================
+    // 8. DNS DISCOVERY & SCHEMA-PRESERVING MANAGEMENT
+    // =========================================================================
+    function isDnsCandidatePath(path) {
+      const lower = path.toLowerCase();
+      if (!lower.endsWith(".json")) return false;
+      if (/(^|\/)playlists\.json$/i.test(lower)) return false;
+      return /(dns|doh|dot|resolver|nameserver)/i.test(lower);
+    }
+
+    function analyzeDnsStructure(parsed) {
+      if (Array.isArray(parsed)) {
+        return { mode: "root_array", arrayKey: null, servers: parsed };
+      }
+      if (parsed && typeof parsed === "object") {
+        const preferred = ["servers", "dns", "resolvers", "providers", "items", "list", "entries", "data"];
+        let arrKey = preferred.find((k) => Array.isArray(parsed[k]));
+        if (!arrKey) {
+          arrKey = Object.keys(parsed).find(
+            (k) => Array.isArray(parsed[k]) && parsed[k].every((x) => typeof x === "object" && x !== null)
+          );
+        }
+        if (arrKey) {
+          return { mode: "wrapped_array", arrayKey: arrKey, servers: parsed[arrKey] };
+        }
+        const values = Object.values(parsed);
+        if (values.length > 0 && values.every((v) => v && typeof v === "object" && !Array.isArray(v))) {
+          return { mode: "object_map", arrayKey: null, servers: parsed };
+        }
+        return { mode: "single_object", arrayKey: null, servers: parsed };
+      }
+      return { mode: "none", arrayKey: null, servers: null };
+    }
+
+    async function discoverAndLoadDns() {
+      const candidates = state.tree
+        .filter((t) => t.type === "blob" && isDnsCandidatePath(t.path))
+        .map((t) => t.path)
+        .sort((a, b) => a.length - b.length);
+
+      state.dnsCandidates = candidates;
+      if (!candidates.length) {
+        state.selectedDnsPath = null;
+        state.dnsSha = null;
+        state.dnsRawText = "";
+        state.dnsParsed = null;
+        state.dnsMode = "none";
+        document.getElementById("tabBadgeDns").textContent = "0";
+        return;
+      }
+
+      if (!state.selectedDnsPath || !candidates.includes(state.selectedDnsPath)) {
+        state.selectedDnsPath = candidates[0];
+      }
+      await loadDnsFile(state.selectedDnsPath);
+    }
+
+    async function loadDnsFile(path) {
+      const repo = state.selectedRepo;
+      try {
+        const file = await getFileFromGitHub(repo.owner.login, repo.name, path, state.currentBranch);
+        state.selectedDnsPath = file.path;
+        state.dnsSha = file.sha;
+        state.dnsRawText = file.text;
+
+        const check = validateJsonText(file.text);
+        if (!check.valid) {
+          state.dnsParsed = null;
+          state.dnsMode = "none";
+          state.dnsEditMode = "raw";
+          document.getElementById("tabBadgeDns").textContent = "!";
+          showToast(`ملف DNS (${path}) يحتوي على JSON غير صالح: ${check.error}`, "error", 6000);
+          return;
+        }
+
+        state.dnsParsed = check.parsed;
+        state.dnsRawText = JSON.stringify(check.parsed, null, 2);
+        const info = analyzeDnsStructure(check.parsed);
+        state.dnsMode = info.mode;
+        state.dnsArrayKey = info.arrayKey;
+
+        const count =
+          info.mode === "root_array" || info.mode === "wrapped_array"
+            ? info.servers.length
+            : info.mode === "object_map"
+            ? Object.keys(info.servers).length
+            : info.mode === "single_object"
+            ? 1
+            : 0;
+        document.getElementById("tabBadgeDns").textContent = String(count);
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function getDnsEnabledKey(obj) {
+      if (!obj || typeof obj !== "object") return null;
+      return ["enabled", "active", "isEnabled"].find((k) => typeof obj[k] === "boolean") || null;
+    }
+
+    function getDnsTitle(obj, fallback) {
+      if (!obj || typeof obj !== "object") return fallback;
+      for (const k of ["name", "title", "label", "provider", "id", "host", "url", "doh", "ip"]) {
+        if (obj[k] && typeof obj[k] === "string") return obj[k];
+      }
+      return fallback;
+    }
+
+    function renderDnsTab() {
+      const container = document.getElementById("tabDns");
+      if (state.workspaceLoading) {
+        container.innerHTML = `<div class="state-box"><div class="spinner"></div><div>جاري فحص ملفات DNS...</div></div>`;
+        return;
+      }
+
+      const allJsonFiles = state.tree
+        .filter((t) => t.type === "blob" && t.path.toLowerCase().endsWith(".json"))
+        .map((t) => t.path);
+
+      if (!state.selectedDnsPath) {
+        container.innerHTML = `
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">إدارة DNS</h2>
+              <p class="section-subtitle">لم يتم اكتشاف ملف DNS تلقائيا بالاسم الشائع في هذا الفرع.</p>
+            </div>
+          </div>
+          <div class="state-box">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div>لا توجد ملفات مطابقة لاسم DNS في الفرع الحالي.</div>
+            ${
+              allJsonFiles.length
+                ? `
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+                <select id="manualDnsFilePick" class="select ltr mono" style="width:auto;min-width:220px">
+                  <option value="">اختر ملف JSON يدويا...</option>
+                  ${allJsonFiles.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("")}
+                </select>
+                <button type="button" class="btn btn-secondary" id="loadManualDnsBtn">فتح كملف DNS</button>
+              </div>`
+                : ""
+            }
+          </div>
+        `;
+        const loadBtn = container.querySelector("#loadManualDnsBtn");
+        if (loadBtn) {
+          loadBtn.onclick = async () => {
+            const p = container.querySelector("#manualDnsFilePick").value;
+            if (!p) return;
+            if (!state.dnsCandidates.includes(p)) state.dnsCandidates.push(p);
+            await loadDnsFile(p);
+            renderDnsTab();
+          };
+        }
+        return;
+      }
+
+      const fileSelectOptions = Array.from(new Set([...state.dnsCandidates, ...allJsonFiles]));
+
+      const headerHtml = `
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">
+              <span>إدارة DNS</span>
+              <select id="dnsFileSelect" class="select ltr mono" style="width:auto;min-height:38px;padding:6px 10px">
+                ${fileSelectOptions
+                  .map(
+                    (p) =>
+                      `<option value="${escapeHtml(p)}" ${
+                        p === state.selectedDnsPath ? "selected" : ""
+                      }>${escapeHtml(p)}${state.dnsCandidates.includes(p) ? "" : " (يدوي)"}</option>`
+                  )
+                  .join("")}
+              </select>
+            </h2>
+            <p class="section-subtitle">تحليل ديناميكي لبنية الملف الأصلية دون تغيير البروتوكول أو أسماء الحقول.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="btn ${state.dnsEditMode === "visual" ? "btn-primary" : "btn-secondary"} btn-sm" id="dnsModeVisualBtn">عرض الخوادم</button>
+            <button type="button" class="btn ${state.dnsEditMode === "raw" ? "btn-primary" : "btn-secondary"} btn-sm" id="dnsModeRawBtn">محرر JSON</button>
+            ${
+              state.dnsMode === "root_array" || state.dnsMode === "wrapped_array" || state.dnsMode === "object_map"
+                ? `<button type="button" class="btn btn-primary btn-sm" id="addDnsServerBtn" ${!canPushRepo() ? "disabled" : ""}>+ إضافة خادم DNS</button>`
+                : ""
+            }
+          </div>
+        </div>
+      `;
+
+      if (state.dnsEditMode === "raw" || state.dnsMode === "none") {
+        const check = validateJsonText(state.dnsRawText);
+        container.innerHTML = `
+          ${headerHtml}
+          <div class="editor-shell">
+            <div class="editor-header">
+              <div class="meta-row">
+                <span class="badge ltr mono">${escapeHtml(state.selectedDnsPath)}</span>
+                <span class="badge ${check.valid ? "badge-success" : "badge-danger"}" id="dnsRawBadge">
+                  ${check.valid ? "JSON صالح" : "JSON غير صالح"}
+                </span>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button type="button" class="btn btn-secondary btn-sm" id="fmtDnsRawBtn">تنسيق JSON</button>
+                <button type="button" class="btn btn-primary btn-sm" id="saveDnsRawBtn" ${!canPushRepo() ? "disabled" : ""}>حفظ إلى GitHub</button>
+              </div>
+            </div>
+            <div class="editor-body">
+              <textarea id="dnsRawEditor" class="code-textarea" spellcheck="false">${escapeHtml(state.dnsRawText)}</textarea>
+              <div id="dnsRawErr" class="field-hint" style="margin-top:8px;color:var(--danger)">${check.valid ? "" : escapeHtml(check.error)}</div>
+            </div>
+          </div>
+        `;
+        bindDnsCommonHeader(container);
+        const ed = container.querySelector("#dnsRawEditor");
+        const badge = container.querySelector("#dnsRawBadge");
+        const errEl = container.querySelector("#dnsRawErr");
+        enableTabInTextarea(ed);
+        ed.addEventListener("input", () => {
+          state.dnsRawText = ed.value;
+          const c = validateJsonText(ed.value);
+          badge.className = `badge ${c.valid ? "badge-success" : "badge-danger"}`;
+          badge.textContent = c.valid ? "JSON صالح" : "JSON غير صالح";
+          errEl.textContent = c.valid ? "" : c.error;
+        });
+        container.querySelector("#fmtDnsRawBtn").onclick = () => {
+          const c = validateJsonText(ed.value);
+          if (!c.valid) return showToast(`خطأ JSON: ${c.error}`, "error");
+          ed.value = JSON.stringify(c.parsed, null, 2);
+          state.dnsRawText = ed.value;
+        };
+        container.querySelector("#saveDnsRawBtn").onclick = () => {
+          const c = validateJsonText(ed.value);
+          if (!c.valid) return showToast(`JSON غير صالح: ${c.error}`, "error");
+          requestGitHubCommit({
+            title: `تحديث ملف DNS (${state.selectedDnsPath})`,
+            defaultMessage: `Update DNS config ${state.selectedDnsPath}`,
+            operations: [
+              {
+                type: "update",
+                path: state.selectedDnsPath,
+                sha: state.dnsSha,
+                text: JSON.stringify(c.parsed, null, 2) + "\n"
+              }
+            ]
+          });
+        };
+        return;
+      }
+
+      // Visual Server List Mode
+      let entries = [];
+      if (state.dnsMode === "root_array") {
+        entries = state.dnsParsed.map((val, i) => ({ key: i, val }));
+      } else if (state.dnsMode === "wrapped_array") {
+        entries = state.dnsParsed[state.dnsArrayKey].map((val, i) => ({ key: i, val }));
+      } else if (state.dnsMode === "object_map") {
+        entries = Object.keys(state.dnsParsed).map((k) => ({ key: k, val: state.dnsParsed[k] }));
+      } else if (state.dnsMode === "single_object") {
+        entries = [{ key: "root", val: state.dnsParsed }];
+      }
+
+      // Top-level extra scalar settings if wrapped_array
+      let globalBarHtml = "";
+      if (state.dnsMode === "wrapped_array") {
+        const scalarKeys = Object.keys(state.dnsParsed).filter((k) => k !== state.dnsArrayKey && (typeof state.dnsParsed[k] !== "object" || state.dnsParsed[k] === null));
+        if (scalarKeys.length) {
+          globalBarHtml = `
+            <div class="card" style="margin-bottom:14px">
+              <div class="meta-row" style="justify-content:space-between">
+                <b>إعدادات عامة داخل الملف</b>
+                <button type="button" class="btn btn-secondary btn-sm" id="editGlobalDnsPropsBtn" ${!canPushRepo() ? "disabled" : ""}>تعديل الإعدادات العامة</button>
+              </div>
+              <div class="meta-row">
+                ${scalarKeys
+                  .map(
+                    (k) =>
+                      `<span class="badge"><span class="ltr mono">${escapeHtml(k)}</span>: <b>${escapeHtml(String(state.dnsParsed[k]))}</b></span>`
+                  )
+                  .join("")}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      const cardsHtml = entries.length
+        ? `<div class="grid-cards">${entries
+            .map(({ key, val }) => {
+              const title = getDnsTitle(val, typeof key === "string" ? key : `خادم #${key + 1}`);
+              const enabledKey = getDnsEnabledKey(val);
+              const isEnabled = enabledKey ? Boolean(val[enabledKey]) : null;
+              const propsList =
+                val && typeof val === "object"
+                  ? Object.entries(val)
+                      .filter(([k]) => k !== enabledKey)
+                      .slice(0, 6)
+                  : [];
+
+              return `
+                <article class="card">
+                  <div class="card-top">
+                    <div style="min-width:0">
+                      ${
+                        typeof key === "string" && key !== "root"
+                          ? `<span class="badge badge-accent ltr mono" style="margin-bottom:6px">${escapeHtml(key)}</span>`
+                          : ""
+                      }
+                      <h3 class="card-title">${escapeHtml(title)}</h3>
+                    </div>
+                    ${
+                      enabledKey
+                        ? `<button type="button" class="switch-btn ${isEnabled ? "on" : ""}" data-dns-toggle="${escapeHtml(String(key))}" ${!canPushRepo() ? "disabled" : ""} aria-label="تفعيل أو تعطيل"></button>`
+                        : ""
+                    }
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:5px;font-size:0.82rem">
+                    ${propsList
+                      .map(
+                        ([k, v]) => `
+                        <div style="display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(148,163,184,0.07);padding-bottom:4px">
+                          <span class="ltr mono" style="color:var(--text-muted)">${escapeHtml(k)}</span>
+                          <span class="ltr mono" style="color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%">${escapeHtml(
+                            typeof v === "object" ? JSON.stringify(v) : String(v)
+                          )}</span>
+                        </div>`
+                      )
+                      .join("")}
+                  </div>
+                  <div class="card-actions">
+                    <button type="button" class="btn btn-primary btn-sm" data-dns-edit="${escapeHtml(String(key))}" ${!canPushRepo() ? "disabled" : ""}>تعديل البيانات</button>
+                    ${
+                      state.dnsMode !== "single_object"
+                        ? `<button type="button" class="btn btn-danger btn-sm" data-dns-del="${escapeHtml(String(key))}" ${!canPushRepo() ? "disabled" : ""}>حذف</button>`
+                        : ""
+                    }
+                  </div>
+                </article>
+              `;
+            })
+            .join("")}</div>`
+        : `<div class="state-box"><div>لا توجد خوادم DNS مسجلة في هذا الملف.</div></div>`;
+
+      container.innerHTML = `${headerHtml}${globalBarHtml}${cardsHtml}`;
+      bindDnsCommonHeader(container);
+
+      const globalEditBtn = container.querySelector("#editGlobalDnsPropsBtn");
+      if (globalEditBtn) globalEditBtn.onclick = openEditGlobalDnsPropsModal;
+
+      container.querySelectorAll("[data-dns-toggle]").forEach((btn) => {
+        btn.onclick = () => toggleDnsServerEnabled(btn.getAttribute("data-dns-toggle"));
+      });
+      container.querySelectorAll("[data-dns-edit]").forEach((btn) => {
+        btn.onclick = () => openDnsEntryModal("edit", btn.getAttribute("data-dns-edit"));
+      });
+      container.querySelectorAll("[data-dns-del]").forEach((btn) => {
+        btn.onclick = () => deleteDnsEntry(btn.getAttribute("data-dns-del"));
+      });
+    }
+
+    function bindDnsCommonHeader(container) {
+      const sel = container.querySelector("#dnsFileSelect");
+      if (sel) {
+        sel.onchange = async () => {
+          if (!state.dnsCandidates.includes(sel.value)) state.dnsCandidates.push(sel.value);
+          await loadDnsFile(sel.value);
+          renderDnsTab();
+        };
+      }
+      const visBtn = container.querySelector("#dnsModeVisualBtn");
+      const rawBtn = container.querySelector("#dnsModeRawBtn");
+      if (visBtn)
+        visBtn.onclick = () => {
+          state.dnsEditMode = "visual";
+          renderDnsTab();
+        };
+      if (rawBtn)
+        rawBtn.onclick = () => {
+          state.dnsEditMode = "raw";
+          renderDnsTab();
+        };
+      const addBtn = container.querySelector("#addDnsServerBtn");
+      if (addBtn) addBtn.onclick = () => openDnsEntryModal("add", null);
+    }
+
+    function toggleDnsServerEnabled(rawKey) {
+      const clone = deepClone(state.dnsParsed);
+      const target =
+        state.dnsMode === "root_array"
+          ? clone[Number(rawKey)]
+          : state.dnsMode === "wrapped_array"
+          ? clone[state.dnsArrayKey][Number(rawKey)]
+          : state.dnsMode === "object_map"
+          ? clone[rawKey]
+          : clone;
+      const enabledKey = getDnsEnabledKey(target);
+      if (!enabledKey) return;
+      const nextVal = !Boolean(target[enabledKey]);
+      target[enabledKey] = nextVal;
+
+      requestGitHubCommit({
+        title: nextVal ? "تفعيل خادم DNS" : "تعطيل خادم DNS",
+        defaultMessage: `${nextVal ? "Enable" : "Disable"} DNS entry in ${state.selectedDnsPath}`,
+        operations: [
+          {
+            type: "update",
+            path: state.selectedDnsPath,
+            sha: state.dnsSha,
+            text: JSON.stringify(clone, null, 2) + "\n"
+          }
+        ]
+      });
+    }
+
+    function buildBlankTemplateFromEntry(sample) {
+      if (!sample || typeof sample !== "object") {
+        return { name: "", url: "", enabled: true };
+      }
+      const out = {};
+      for (const [k, v] of Object.entries(sample)) {
+        if (typeof v === "boolean") out[k] = true;
+        else if (typeof v === "number") out[k] = v;
+        else if (Array.isArray(v)) out[k] = [];
+        else if (v && typeof v === "object") out[k] = {};
+        else out[k] = "";
+      }
+      return out;
+    }
+
+    function openDnsEntryModal(action, rawKey) {
+      let existingObj = null;
+      if (action === "edit") {
+        existingObj =
+          state.dnsMode === "root_array"
+            ? state.dnsParsed[Number(rawKey)]
+            : state.dnsMode === "wrapped_array"
+            ? state.dnsParsed[state.dnsArrayKey][Number(rawKey)]
+            : state.dnsMode === "object_map"
+            ? state.dnsParsed[rawKey]
+            : state.dnsParsed;
+      } else {
+        const sample =
+          state.dnsMode === "root_array"
+            ? state.dnsParsed[0]
+            : state.dnsMode === "wrapped_array"
+            ? state.dnsParsed[state.dnsArrayKey][0]
+            : state.dnsMode === "object_map"
+            ? Object.values(state.dnsParsed)[0]
+            : null;
+        existingObj = buildBlankTemplateFromEntry(sample);
+      }
+
+      const entries = Object.entries(existingObj || {});
+      const isObjMapAdd = action === "add" && state.dnsMode === "object_map";
+
+      const fieldsHtml = entries
+        .map(([k, v], i) => {
+          const id = `dnsField_${i}`;
+          if (typeof v === "boolean") {
+            return `
+              <div class="field-group">
+                <label class="field-label ltr mono">${escapeHtml(k)}</label>
+                <label class="checkbox-row">
+                  <input type="checkbox" id="${id}" data-dns-field="${escapeHtml(k)}" data-dns-type="boolean" ${v ? "checked" : ""} />
+                  <span>${escapeHtml(k)}</span>
+                </label>
+              </div>
+            `;
+          }
+          if (typeof v === "number") {
+            return `
+              <div class="field-group">
+                <label class="field-label ltr mono" for="${id}">${escapeHtml(k)}</label>
+                <input type="number" id="${id}" class="input ltr mono" data-dns-field="${escapeHtml(k)}" data-dns-type="number" value="${escapeHtml(String(v))}" />
+              </div>
+            `;
+          }
+          if (Array.isArray(v) || (v && typeof v === "object")) {
+            return `
+              <div class="field-group">
+                <label class="field-label ltr mono" for="${id}">${escapeHtml(k)} (JSON)</label>
+                <textarea id="${id}" class="code-textarea" style="min-height:90px" data-dns-field="${escapeHtml(k)}" data-dns-type="json">${escapeHtml(
+                  JSON.stringify(v, null, 2)
+                )}</textarea>
+              </div>
+            `;
+          }
+          return `
+            <div class="field-group">
+              <label class="field-label ltr mono" for="${id}">${escapeHtml(k)}</label>
+              <input type="text" id="${id}" class="input ltr mono" data-dns-field="${escapeHtml(k)}" data-dns-type="string" value="${escapeHtml(v ?? "")}" />
+            </div>
+          `;
+        })
+        .join("");
+
+      openModal({
+        title: action === "add" ? "إضافة خادم DNS جديد" : "تعديل بيانات خادم DNS",
+        bodyHtml: `
+          ${
+            isObjMapAdd
+              ? `
+            <div class="field-group">
+              <label class="field-label" for="dnsMapKeyInput">اسم المفتاح في الخريطة (Key)</label>
+              <input type="text" id="dnsMapKeyInput" class="input ltr mono" placeholder="custom_dns" />
+            </div>`
+              : ""
+          }
+          ${fieldsHtml || `<p class="field-hint">لا توجد حقول مهيكلة؛ يمكنك استخدام محرر JSON.</p>`}
+        `,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "معاينة وحفظ التغييرات",
+            className: "btn-primary",
+            onClick: (backdrop) => {
+              const built = deepClone(existingObj || {});
+              for (const el of backdrop.querySelectorAll("[data-dns-field]")) {
+                const k = el.getAttribute("data-dns-field");
+                const t = el.getAttribute("data-dns-type");
+                if (t === "boolean") built[k] = el.checked;
+                else if (t === "number") built[k] = el.value === "" ? 0 : Number(el.value);
+                else if (t === "json") {
+                  const chk = validateJsonText(el.value);
+                  if (!chk.valid) {
+                    showToast(`حقل ${k} يحتوي على JSON غير صالح: ${chk.error}`, "error");
+                    return;
+                  }
+                  built[k] = chk.parsed;
+                } else {
+                  built[k] = el.value;
+                }
+              }
+
+              const clone = deepClone(state.dnsParsed);
+              if (state.dnsMode === "root_array") {
+                if (action === "add") clone.push(built);
+                else clone[Number(rawKey)] = built;
+              } else if (state.dnsMode === "wrapped_array") {
+                if (action === "add") clone[state.dnsArrayKey].push(built);
+                else clone[state.dnsArrayKey][Number(rawKey)] = built;
+              } else if (state.dnsMode === "object_map") {
+                if (action === "add") {
+                  const mapKey = backdrop.querySelector("#dnsMapKeyInput").value.trim();
+                  if (!mapKey) {
+                    showToast("يرجى إدخال اسم المفتاح.", "warning");
+                    return;
+                  }
+                  clone[mapKey] = built;
+                } else {
+                  clone[rawKey] = built;
+                }
+              } else if (state.dnsMode === "single_object") {
+                Object.assign(clone, built);
+              }
+
+              requestGitHubCommit({
+                title: action === "add" ? "إضافة خادم DNS" : "تحديث خادم DNS",
+                defaultMessage: `${action === "add" ? "Add" : "Update"} DNS server in ${state.selectedDnsPath}`,
+                operations: [
+                  {
+                    type: "update",
+                    path: state.selectedDnsPath,
+                    sha: state.dnsSha,
+                    text: JSON.stringify(clone, null, 2) + "\n"
+                  }
+                ]
+              });
+            }
+          }
+        ]
+      });
+    }
+
+    function openEditGlobalDnsPropsModal() {
+      const scalarKeys = Object.keys(state.dnsParsed).filter(
+        (k) => k !== state.dnsArrayKey && (typeof state.dnsParsed[k] !== "object" || state.dnsParsed[k] === null)
+      );
+      const html = scalarKeys
+        .map((k, i) => {
+          const v = state.dnsParsed[k];
+          if (typeof v === "boolean") {
+            return `
+              <div class="field-group">
+                <label class="checkbox-row">
+                  <input type="checkbox" id="gDns_${i}" data-gk="${escapeHtml(k)}" data-gt="boolean" ${v ? "checked" : ""} />
+                  <span class="ltr mono">${escapeHtml(k)}</span>
+                </label>
+              </div>`;
+          }
+          return `
+            <div class="field-group">
+              <label class="field-label ltr mono" for="gDns_${i}">${escapeHtml(k)}</label>
+              <input type="${typeof v === "number" ? "number" : "text"}" id="gDns_${i}" class="input ltr mono" data-gk="${escapeHtml(k)}" data-gt="${typeof v}" value="${escapeHtml(String(v ?? ""))}" />
+            </div>`;
+        })
+        .join("");
+
+      openModal({
+        title: "تعديل الإعدادات العامة لـ DNS",
+        bodyHtml: html,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "معاينة وحفظ",
+            className: "btn-primary",
+            onClick: (backdrop) => {
+              const clone = deepClone(state.dnsParsed);
+              backdrop.querySelectorAll("[data-gk]").forEach((el) => {
+                const k = el.getAttribute("data-gk");
+                const t = el.getAttribute("data-gt");
+                if (t === "boolean") clone[k] = el.checked;
+                else if (t === "number") clone[k] = Number(el.value);
+                else clone[k] = el.value;
+              });
+              requestGitHubCommit({
+                title: "تحديث إعدادات DNS العامة",
+                defaultMessage: `Update global DNS settings in ${state.selectedDnsPath}`,
+                operations: [
+                  {
+                    type: "update",
+                    path: state.selectedDnsPath,
+                    sha: state.dnsSha,
+                    text: JSON.stringify(clone, null, 2) + "\n"
+                  }
+                ]
+              });
+            }
+          }
+        ]
+      });
+    }
+
+    function deleteDnsEntry(rawKey) {
+      openModal({
+        title: "تأكيد حذف خادم DNS",
+        bodyHtml: `<p style="margin:0">هل تريد حذف خادم DNS المحدد من <span class="ltr mono">${escapeHtml(state.selectedDnsPath)}</span>؟</p>`,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "متابعة الحذف",
+            className: "btn-danger",
+            onClick: () => {
+              const clone = deepClone(state.dnsParsed);
+              if (state.dnsMode === "root_array") clone.splice(Number(rawKey), 1);
+              else if (state.dnsMode === "wrapped_array") clone[state.dnsArrayKey].splice(Number(rawKey), 1);
+              else if (state.dnsMode === "object_map") delete clone[rawKey];
+
+              requestGitHubCommit({
+                title: "حذف خادم DNS",
+                defaultMessage: `Remove DNS server from ${state.selectedDnsPath}`,
+                operations: [
+                  {
+                    type: "update",
+                    path: state.selectedDnsPath,
+                    sha: state.dnsSha,
+                    text: JSON.stringify(clone, null, 2) + "\n"
+                  }
+                ]
+              });
+            }
+          }
+        ]
+      });
+    }
+
+    // =========================================================================
+    // 9. FILE MANAGER
+    // =========================================================================
+    function getDirectoryEntries(dirPath) {
+      const prefix = dirPath ? `${dirPath}/` : "";
+      const folders = new Map();
+      const files = [];
+
+      for (const item of state.tree) {
+        if (prefix && !item.path.startsWith(prefix)) continue;
+        const rest = prefix ? item.path.slice(prefix.length) : item.path;
+        if (!rest) continue;
+
+        const slashIdx = rest.indexOf("/");
+        if (slashIdx > -1) {
+          const folderName = rest.slice(0, slashIdx);
+          const fullFolderPath = joinPath(dirPath, folderName);
+          if (!folders.has(fullFolderPath)) {
+            folders.set(fullFolderPath, { name: folderName, path: fullFolderPath, type: "dir" });
+          }
+        } else if (item.type === "tree") {
+          if (!folders.has(item.path)) {
+            folders.set(item.path, { name: rest, path: item.path, type: "dir" });
+          }
+        } else if (item.type === "blob") {
+          files.push({
+            name: rest,
+            path: item.path,
+            type: "file",
+            sha: item.sha,
+            size: item.size
+          });
+        }
+      }
+
+      const sortedDirs = Array.from(folders.values()).sort((a, b) => a.name.localeCompare(b.name));
+      const sortedFiles = files.sort((a, b) => a.name.localeCompare(b.name));
+      return [...sortedDirs, ...sortedFiles];
+    }
+
+    function renderFilesTab() {
+      const container = document.getElementById("tabFiles");
+      if (state.workspaceLoading) {
+        container.innerHTML = `<div class="state-box"><div class="spinner"></div><div>جاري تحميل ملفات المستودع...</div></div>`;
+        return;
+      }
+
+      if (state.openFile) {
+        renderOpenFileEditor(container);
+        return;
+      }
+
+      const q = state.fileSearch.trim().toLowerCase();
+      let entries;
+      if (state.globalSearch && q) {
+        entries = state.tree
+          .filter((t) => t.type === "blob" && t.path.toLowerCase().includes(q))
+          .map((t) => ({ name: t.path, path: t.path, type: "file", sha: t.sha, size: t.size }));
+      } else {
+        entries = getDirectoryEntries(state.currentDir).filter((e) =>
+          q ? e.name.toLowerCase().includes(q) : true
+        );
+      }
+
+      const dirParts = state.currentDir ? state.currentDir.split("/") : [];
+      const breadcrumbHtml = `
+        <div class="breadcrumb ltr" style="direction:ltr">
+          <button type="button" class="breadcrumb-item mono" data-nav-dir="">/</button>
+          ${dirParts
+            .map((part, i) => {
+              const p = dirParts.slice(0, i + 1).join("/");
+              const isLast = i === dirParts.length - 1;
+              return `
+                <span style="color:var(--text-muted)">/</span>
+                ${
+                  isLast
+                    ? `<span class="breadcrumb-current mono">${escapeHtml(part)}</span>`
+                    : `<button type="button" class="breadcrumb-item mono" data-nav-dir="${escapeHtml(p)}">${escapeHtml(part)}</button>`
+                }
+              `;
+            })
+            .join("")}
+        </div>
+      `;
+
+      const listHtml = entries.length
+        ? `<div class="file-list">${entries
+            .map((e) => {
+              const isDir = e.type === "dir";
+              const isJson = !isDir && e.name.toLowerCase().endsWith(".json");
+              return `
+                <div class="file-row">
+                  <div class="file-row-main" data-entry-open="${escapeHtml(e.path)}" data-entry-type="${e.type}">
+                    <div class="file-icon ${isDir ? "dir" : isJson ? "json" : ""}">
+                      ${
+                        isDir
+                          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`
+                          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>`
+                      }
+                    </div>
+                    <div style="min-width:0">
+                      <div class="file-name ltr mono">${escapeHtml(e.name)}</div>
+                      <div class="file-meta">${isDir ? "مجلد" : formatBytes(e.size)}</div>
+                    </div>
+                  </div>
+                  <div class="file-row-actions">
+                    ${
+                      !isDir && canPushRepo()
+                        ? `<button type="button" class="btn btn-secondary btn-sm" data-file-rename="${escapeHtml(e.path)}" title="إعادة تسمية">تسمية</button>`
+                        : ""
+                    }
+                    ${
+                      canPushRepo()
+                        ? `<button type="button" class="btn btn-danger btn-sm" data-entry-delete="${escapeHtml(e.path)}" data-entry-type="${e.type}" title="حذف">حذف</button>`
+                        : ""
+                    }
+                  </div>
+                </div>
+              `;
+            })
+            .join("")}</div>`
+        : `<div class="state-box" style="border:none;border-radius:0"><div>لا توجد ملفات أو مجلدات هنا.</div></div>`;
+
+      container.innerHTML = `
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">مدير الملفات</h2>
+            <p class="section-subtitle">تصفح الملفات، أنشئ ملفات أو مجلدات، حرر JSON مع تنسيق وتحقق تلقائي.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="btn btn-secondary btn-sm" id="newFolderBtn" ${!canPushRepo() ? "disabled" : ""}>+ مجلد جديد</button>
+            <button type="button" class="btn btn-primary btn-sm" id="newFileBtn" ${!canPushRepo() ? "disabled" : ""}>+ ملف جديد</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-search">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="fileSearchInput" class="input" placeholder="ابحث عن ملف..." value="${escapeHtml(state.fileSearch)}" />
+          </div>
+          <label class="checkbox-row" style="min-height:42px;padding:6px 12px">
+            <input type="checkbox" id="globalFileSearchChk" ${state.globalSearch ? "checked" : ""} />
+            <span style="font-size:0.84rem">بحث في كامل المستودع</span>
+          </label>
+        </div>
+
+        <div class="panel-box">
+          ${breadcrumbHtml}
+          ${listHtml}
+        </div>
+      `;
+
+      const searchEl = container.querySelector("#fileSearchInput");
+      searchEl.addEventListener("input", () => {
+        state.fileSearch = searchEl.value;
+        renderFilesTab();
+        // preserve cursor focus
+        const nextSearch = document.getElementById("fileSearchInput");
+        if (nextSearch) {
+          nextSearch.focus();
+          nextSearch.setSelectionRange(nextSearch.value.length, nextSearch.value.length);
+        }
+      });
+
+      container.querySelector("#globalFileSearchChk").onchange = (e) => {
+        state.globalSearch = e.target.checked;
+        renderFilesTab();
+      };
+
+      container.querySelectorAll("[data-nav-dir]").forEach((btn) => {
+        btn.onclick = () => {
+          state.currentDir = btn.getAttribute("data-nav-dir");
+          state.fileSearch = "";
+          renderFilesTab();
+        };
+      });
+
+      container.querySelectorAll("[data-entry-open]").forEach((row) => {
+        row.onclick = () => {
+          const p = row.getAttribute("data-entry-open");
+          const t = row.getAttribute("data-entry-type");
+          if (t === "dir") {
+            state.currentDir = p;
+            state.fileSearch = "";
+            renderFilesTab();
+          } else {
+            openFileInEditor(p);
+          }
+        };
+      });
+
+      container.querySelectorAll("[data-file-rename]").forEach((btn) => {
+        btn.onclick = () => openRenameFileModal(btn.getAttribute("data-file-rename"));
+      });
+
+      container.querySelectorAll("[data-entry-delete]").forEach((btn) => {
+        btn.onclick = () =>
+          openDeleteEntryModal(
+            btn.getAttribute("data-entry-delete"),
+            btn.getAttribute("data-entry-type")
+          );
+      });
+
+      container.querySelector("#newFileBtn").onclick = openNewFileModal;
+      container.querySelector("#newFolderBtn").onclick = openNewFolderModal;
+    }
+
+    async function openRawFileInFileManager(path) {
+      setActiveTab("files");
+      await openFileInEditor(path);
+    }
+
+    async function openFileInEditor(path) {
+      const repo = state.selectedRepo;
+      state.workspaceLoading = true;
+      renderFilesTab();
+      try {
+        const file = await getFileFromGitHub(repo.owner.login, repo.name, path, state.currentBranch);
+        state.openFile = {
+          path: file.path,
+          sha: file.sha,
+          size: file.size,
+          isBinary: file.isBinary,
+          content: file.text,
+          isJson: file.path.toLowerCase().endsWith(".json")
+        };
+      } catch (err) {
+        showToast(err.message, "error", 6000);
+      } finally {
+        state.workspaceLoading = false;
+        renderFilesTab();
+      }
+    }
+
+    function renderOpenFileEditor(container) {
+      const f = state.openFile;
+      if (f.isBinary) {
+        container.innerHTML = `
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">
+                <button type="button" class="btn btn-secondary btn-sm" id="backToDirBtn">← رجوع للملفات</button>
+                <span class="ltr mono">${escapeHtml(f.path)}</span>
+              </h2>
+            </div>
+          </div>
+          <div class="state-box">
+            <div>هذا الملف ثنائي (Binary) بحجم ${formatBytes(f.size)} ولا يمكن تحريره كنص.</div>
+          </div>
+        `;
+        container.querySelector("#backToDirBtn").onclick = () => {
+          state.openFile = null;
+          renderFilesTab();
+        };
+        return;
+      }
+
+      const jsonCheck = f.isJson ? validateJsonText(f.content) : null;
+
+      container.innerHTML = `
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">
+              <button type="button" class="btn btn-secondary btn-sm" id="backToDirBtn">← رجوع للملفات</button>
+              <span class="ltr mono">${escapeHtml(baseName(f.path))}</span>
+            </h2>
+            <p class="section-subtitle ltr mono">${escapeHtml(f.path)} • ${formatBytes(f.size)}</p>
+          </div>
+          ${
+            f.isJson
+              ? `<span class="badge ${jsonCheck.valid ? "badge-success" : "badge-danger"}" id="fileJsonBadge">
+                  ${jsonCheck.valid ? "JSON صالح" : "JSON غير صالح"}
+                </span>`
+              : ""
+          }
+        </div>
+
+        <div class="editor-shell">
+          <div class="editor-header">
+            <div class="meta-row">
+              <span class="badge ltr mono">SHA: ${escapeHtml((f.sha || "").slice(0, 7))}</span>
+              <span class="badge" id="fileStatsBadge">${f.content.split("\n").length} سطر</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              ${f.isJson ? `<button type="button" class="btn btn-secondary btn-sm" id="fmtOpenFileBtn">تنسيق JSON</button>` : ""}
+              <button type="button" class="btn btn-primary btn-sm" id="saveOpenFileBtn" ${!canPushRepo() ? "disabled" : ""}>حفظ التعديلات</button>
+            </div>
+          </div>
+          <div class="editor-body">
+            <textarea id="openFileTextarea" class="code-textarea" spellcheck="false">${escapeHtml(f.content)}</textarea>
+            <div id="openFileJsonErr" class="field-hint" style="margin-top:8px;color:var(--danger)">
+              ${f.isJson && !jsonCheck.valid ? escapeHtml(jsonCheck.error) : ""}
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.querySelector("#backToDirBtn").onclick = () => {
+        state.openFile = null;
+        renderFilesTab();
+      };
+
+      const ed = container.querySelector("#openFileTextarea");
+      const statsBadge = container.querySelector("#fileStatsBadge");
+      const jsonBadge = container.querySelector("#fileJsonBadge");
+      const jsonErr = container.querySelector("#openFileJsonErr");
+
+      enableTabInTextarea(ed);
+
+      ed.addEventListener("input", () => {
+        f.content = ed.value;
+        statsBadge.textContent = `${ed.value.split("\n").length} سطر`;
+        if (f.isJson && jsonBadge) {
+          const chk = validateJsonText(ed.value);
+          jsonBadge.className = `badge ${chk.valid ? "badge-success" : "badge-danger"}`;
+          jsonBadge.textContent = chk.valid ? "JSON صالح" : "JSON غير صالح";
+          jsonErr.textContent = chk.valid ? "" : chk.error;
+        }
+      });
+
+      const fmtBtn = container.querySelector("#fmtOpenFileBtn");
+      if (fmtBtn) {
+        fmtBtn.onclick = () => {
+          const chk = validateJsonText(ed.value);
+          if (!chk.valid) return showToast(`تعذر تنسيق JSON: ${chk.error}`, "error");
+          const formatted = JSON.stringify(chk.parsed, null, 2);
+          ed.value = formatted;
+          f.content = formatted;
+          statsBadge.textContent = `${formatted.split("\n").length} سطر`;
+          showToast("تم تنسيق JSON.", "success", 2000);
+        };
+      }
+
+      container.querySelector("#saveOpenFileBtn").onclick = () => {
+        if (f.isJson) {
+          const chk = validateJsonText(ed.value);
+          if (!chk.valid) {
+            showToast(`يرجى إصلاح خطأ JSON قبل الحفظ: ${chk.error}`, "error", 5000);
+            return;
+          }
+        }
+        requestGitHubCommit({
+          title: `حفظ الملف ${f.path}`,
+          defaultMessage: `Update ${f.path}`,
+          operations: [
+            {
+              type: "update",
+              path: f.path,
+              sha: f.sha,
+              text: ed.value
+            }
+          ]
+        });
+      };
+    }
+
+    function openNewFileModal() {
+      const prefix = state.currentDir ? `${state.currentDir}/` : "";
+      openModal({
+        title: "إنشاء ملف جديد",
+        bodyHtml: `
+          <div class="field-group">
+            <label class="field-label" for="newFilePathInput">مسار واسم الملف</label>
+            <input type="text" id="newFilePathInput" class="input ltr mono" value="${escapeHtml(prefix)}" placeholder="example.json" />
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <div class="field-label">
+              <span>محتوى الملف</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="fmtNewFileJsonBtn">تنسيق JSON</button>
+            </div>
+            <textarea id="newFileContentInput" class="code-textarea" style="min-height:220px" placeholder="{\n  \n}"></textarea>
+          </div>
+        `,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "معاينة وإنشاء",
+            className: "btn-primary",
+            onClick: (backdrop) => {
+              const path = backdrop.querySelector("#newFilePathInput").value.trim().replace(/^\/+/, "");
+              const content = backdrop.querySelector("#newFileContentInput").value;
+              if (!path || path.endsWith("/")) {
+                showToast("يرجى إدخال اسم ملف صحيح.", "warning");
+                return;
+              }
+              if (state.tree.some((t) => t.type === "blob" && t.path === path)) {
+                showToast("يوجد ملف بهذا الاسم بالفعل في هذا المسار.", "warning");
+                return;
+              }
+              if (path.toLowerCase().endsWith(".json")) {
+                const chk = validateJsonText(content);
+                if (!chk.valid) {
+                  showToast(`ملف JSON غير صالح: ${chk.error}`, "error");
+                  return;
+                }
+              }
+              requestGitHubCommit({
+                title: `إنشاء ملف ${path}`,
+                defaultMessage: `Create ${path}`,
+                operations: [{ type: "create", path, text: content }]
+              });
+            }
+          }
+        ],
+        onMount: (backdrop) => {
+          backdrop.querySelector("#fmtNewFileJsonBtn").onclick = () => {
+            const ta = backdrop.querySelector("#newFileContentInput");
+            const chk = validateJsonText(ta.value);
+            if (!chk.valid) return showToast(`JSON غير صالح: ${chk.error}`, "error");
+            ta.value = JSON.stringify(chk.parsed, null, 2);
+          };
+        }
+      });
+    }
+
+    function openNewFolderModal() {
+      const prefix = state.currentDir ? `${state.currentDir}/` : "";
+      openModal({
+        title: "إنشاء مجلد جديد",
+        bodyHtml: `
+          <div class="info-banner" style="margin-bottom:0">
+            يعتمد Git على وجود ملف داخل المجلد لحفظه، لذا سيتم إنشاء ملف <span class="ltr mono">.gitkeep</span> تلقائيا داخل المجلد الجديد.
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label" for="newFolderPathInput">اسم أو مسار المجلد</label>
+            <input type="text" id="newFolderPathInput" class="input ltr mono" value="${escapeHtml(prefix)}" placeholder="config/dns" />
+          </div>
+        `,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "معاينة وإنشاء",
+            className: "btn-primary",
+            onClick: (backdrop) => {
+              const folder = backdrop
+                .querySelector("#newFolderPathInput")
+                .value.trim()
+                .replace(/^\/+|\/+$/g, "");
+              if (!folder) {
+                showToast("يرجى إدخال اسم المجلد.", "warning");
+                return;
+              }
+              const targetPath = `${folder}/.gitkeep`;
+              requestGitHubCommit({
+                title: `إنشاء مجلد ${folder}`,
+                defaultMessage: `Create folder ${folder}`,
+                operations: [{ type: "create", path: targetPath, text: "" }]
+              });
+            }
+          }
+        ]
+      });
+    }
+
+    function openRenameFileModal(oldPath) {
+      openModal({
+        title: "إعادة تسمية / نقل ملف",
+        bodyHtml: `
+          <div class="field-group" style="margin-bottom:0">
+            <label class="field-label" for="renameFileInput">المسار والاسم الجديد</label>
+            <input type="text" id="renameFileInput" class="input ltr mono" value="${escapeHtml(oldPath)}" />
+          </div>
+          <p class="field-hint" style="margin:0">سيتم إنشاء الملف بالمسار الجديد وحذف المسار القديم عبر GitHub Contents API.</p>
+        `,
+        footerButtons: [
+          { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+          {
+            label: "معاينة وتنفيذ",
+            className: "btn-primary",
+            onClick: async (backdrop) => {
+              const newPath = backdrop.querySelector("#renameFileInput").value.trim().replace(/^\/+/, "");
+              if (!newPath || newPath === oldPath) {
+                showToast("يرجى إدخال اسم جديد مختلف.", "warning");
+                return;
+              }
+              if (state.tree.some((t) => t.type === "blob" && t.path === newPath)) {
+                showToast("المسار الجديد موجود مسبقا.", "warning");
+                return;
+              }
+              try {
+                const file = await getFileFromGitHub(
+                  state.selectedRepo.owner.login,
+                  state.selectedRepo.name,
+                  oldPath,
+                  state.currentBranch
+                );
+                if (file.isBinary) {
+                  showToast("إعادة تسمية الملفات الثنائية غير مدعومة نصيا.", "warning");
+                  return;
+                }
+                requestGitHubCommit({
+                  title: `إعادة تسمية ${oldPath}`,
+                  defaultMessage: `Rename ${oldPath} to ${newPath}`,
+                  operations: [
+                    { type: "create", path: newPath, text: file.text },
+                    { type: "delete", path: oldPath, sha: file.sha }
+                  ]
+                });
+              } catch (err) {
+                showToast(err.message, "error");
+              }
+            }
+          }
+        ]
+      });
+    }
+
+    function openDeleteEntryModal(path, type) {
+      if (type === "dir") {
+        const prefix = `${path}/`;
+        const childBlobs = state.tree.filter((t) => t.type === "blob" && t.path.startsWith(prefix));
+        if (!childBlobs.length) {
+          showToast("لا توجد ملفات قابلة للحذف داخل هذا المجلد.", "info");
+          return;
+        }
+        openModal({
+          title: `تأكيد حذف المجلد ${path}`,
+          bodyHtml: `
+            <p style="margin:0">سيتم حذف المجلد عبر حذف جميع الملفات الموجودة بداخله (${childBlobs.length} ملف):</p>
+            <div class="preview-block">
+              <pre>${escapeHtml(childBlobs.map((b) => b.path).join("\n"))}</pre>
+            </div>
+          `,
+          footerButtons: [
+            { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+            {
+              label: "متابعة الحذف",
+              className: "btn-danger",
+              onClick: () => {
+                requestGitHubCommit({
+                  title: `حذف المجلد ${path}`,
+                  defaultMessage: `Delete folder ${path}`,
+                  operations: childBlobs.map((b) => ({
+                    type: "delete",
+                    path: b.path,
+                    sha: b.sha
+                  })),
+                  onSuccess: () => {
+                    if (state.currentDir === path || state.currentDir.startsWith(prefix)) {
+                      state.currentDir = dirName(path);
+                    }
+                  }
+                });
+              }
+            }
+          ]
+        });
+      } else {
+        const blob = state.tree.find((t) => t.type === "blob" && t.path === path);
+        openModal({
+          title: "تأكيد حذف الملف",
+          bodyHtml: `<p style="margin:0">هل أنت متأكد من حذف الملف <span class="ltr mono">${escapeHtml(path)}</span> نهائيا؟</p>`,
+          footerButtons: [
+            { label: "إلغاء", className: "btn-secondary", onClick: closeModal },
+            {
+              label: "حذف الملف",
+              className: "btn-danger",
+              onClick: () => {
+                requestGitHubCommit({
+                  title: `حذف ${path}`,
+                  defaultMessage: `Delete ${path}`,
+                  operations: [{ type: "delete", path, sha: blob?.sha }]
+                });
+              }
+            }
+          ]
+        });
+      }
+    }
+
+    function enableTabInTextarea(textarea) {
+      textarea.addEventListener("keydown", (e) => {
+        if (e.key === "Tab") {
+          e.preventDefault();
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          textarea.value =
+            textarea.value.substring(0, start) + "  " + textarea.value.substring(end);
+          textarea.selectionStart = textarea.selectionEnd = start + 2;
+        }
+      });
+    }
+
+    // =========================================================================
+    // 10. NAVIGATION & EVENT WIRING
+    // =========================================================================
+    function setActiveTab(tab) {
+      if (tab === "repos") {
+        renderScreen("repos");
+        renderReposList();
+        return;
+      }
+      state.activeTab = tab;
+
+      document.querySelectorAll(".nav-tab, .mobile-nav-btn").forEach((el) => {
+        el.classList.toggle("active", el.getAttribute("data-tab") === tab);
+      });
+
+      document.getElementById("tabPlaylists").classList.toggle("hidden", tab !== "playlists");
+      document.getElementById("tabDns").classList.toggle("hidden", tab !== "dns");
+      document.getElementById("tabFiles").classList.toggle("hidden", tab !== "files");
+
+      renderWorkspaceTab();
+    }
+
+    function renderWorkspaceTab() {
+      if (state.activeTab === "playlists") renderPlaylistsTab();
+      else if (state.activeTab === "dns") renderDnsTab();
+      else if (state.activeTab === "files") renderFilesTab();
+    }
+
+    // Optional Android WebView back-navigation hook
+    window.__alammnaHandleBack = function () {
+      if (modalRoot.innerHTML.trim() !== "") {
+        closeModal();
+        return true;
+      }
+      if (state.activeTab === "playlists" && state.activePlaylistFile) {
+        state.activePlaylistFile = null;
+        renderPlaylistsTab();
+        return true;
+      }
+      if (state.activeTab === "files" && state.openFile) {
+        state.openFile = null;
+        renderFilesTab();
+        return true;
+      }
+      if (state.activeTab === "files" && state.currentDir) {
+        state.currentDir = dirName(state.currentDir);
+        renderFilesTab();
+        return true;
+      }
+      if (!document.getElementById("workspaceScreen").classList.contains("hidden")) {
+        renderScreen("repos");
+        renderReposList();
+        return true;
+      }
+      return false;
+    };
+
+    // DOM Listeners
+    document.getElementById("connectForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      connectWithToken(document.getElementById("tokenInput").value);
+    });
+
+    document.getElementById("toggleTokenVisBtn").addEventListener("click", () => {
+      const inp = document.getElementById("tokenInput");
+      inp.type = inp.type === "password" ? "text" : "password";
+    });
+
+    document.getElementById("disconnectBtn").addEventListener("click", () => {
+      wipeSecretsAndReset();
+      renderScreen("connect");
+      showToast("تم قطع الاتصال ومسح الرمز من الذاكرة.", "info");
+    });
+
+    document.getElementById("switchRepoBtn").addEventListener("click", () => {
+      renderScreen("repos");
+      renderReposList();
+    });
+
+    document.getElementById("topbarRepoPill").addEventListener("click", () => {
+      renderScreen("repos");
+      renderReposList();
+    });
+
+    document.getElementById("refreshReposBtn").addEventListener("click", () => {
+      loadRepositories();
+    });
+
+    document.getElementById("reloadRepoBtn").addEventListener("click", () => {
+      loadBranchesAndWorkspace();
+    });
+
+    document.getElementById("branchSelect").addEventListener("change", (e) => {
+      state.currentBranch = e.target.value;
+      loadWorkspaceData();
+    });
+
+    document.getElementById("repoSearchInput").addEventListener("input", (e) => {
+      state.repoSearch = e.target.value;
+      renderReposList();
+    });
+
+    document.getElementById("repoFilterChips").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-filter]");
+      if (!btn) return;
+      state.repoFilter = btn.getAttribute("data-filter");
+      document.querySelectorAll("#repoFilterChips .chip").forEach((c) => {
+        c.classList.toggle("active", c === btn);
+      });
+      renderReposList();
+    });
+
+    document.querySelectorAll(".nav-tab, .mobile-nav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setActiveTab(btn.getAttribute("data-tab"));
+      });
+    });
+  })();
+  </script>
+</body>
+</html>

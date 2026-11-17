@@ -1,0 +1,6 @@
+{
+  "name": "Alammna Panel",
+  "description": "لوحة تحكم احترافية لإدارة مستودعات GitHub وقوائم عالمنا وملفات DNS والملفات من واجهة واحدة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
